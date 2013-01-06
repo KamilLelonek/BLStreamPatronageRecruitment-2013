@@ -1,0 +1,32 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	tools:context=".FirstTaskAndroid" >
+
+	<Button
+		android:id="@+id/buttonAddNewItem"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		android:onClick="addNewItemClick"
+		android:text="@string/label_addItem" />
+
+	<EditText
+		android:id="@+id/editTextFilter"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_above="@+id/buttonAddNewItem"
+		android:ems="10"
+		android:hint="@string/label_filterHint"
+		android:inputType="textNoSuggestions"
+		android:singleLine="true" />
+
+	<ListView
+		android:id="@+id/listView"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_above="@+id/editTextFilter"
+		android:layout_alignParentTop="true" />
+
+</RelativeLayout>

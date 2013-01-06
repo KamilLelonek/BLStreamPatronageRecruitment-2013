@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<string-array name="items">
+		<item>Wrocław</item>
+		<item>Kraków</item>
+		<item>Warszawa</item>
+		<item>Poznań</item>
+		<item>Szczecin</item>
+		<item>Gdańsk</item>
+		<item>Łódź</item>
+	</string-array>
+
+</resources>

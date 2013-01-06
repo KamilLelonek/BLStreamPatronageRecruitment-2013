@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<!-- General -->
+	<string name="app_name">FirstTaskAndroid</string>
+
+	<!-- Main Activity -->
+	<string name="label_addItem">Add new item</string>
+	<string name="label_filterHint">type in to filter</string>
+	<string name="label_itemName">New item name:</string>
+	<string name="menu_rename">rename</string>
+	<string name="menu_delete">delete</string>
+	<string name="alert_name_not_correct">Name not correct</string>
+	<string name="alert_item_exists">Item already exists</string>
+	<string name="alert_saving_error">Can\'t write list to internal storage.</string>
+	<string name="alert_reading_error">Can\'t read list from internal storage.</string>
+
+</resources>
