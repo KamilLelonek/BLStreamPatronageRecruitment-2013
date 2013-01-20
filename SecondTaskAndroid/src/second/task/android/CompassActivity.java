@@ -3,7 +3,7 @@ package second.task.android;
 import java.util.ArrayList;
 
 import second.task.android.items.Item;
-import second.task.android.utils.CompasArrow;
+import second.task.android.utils.CompassArrow;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -16,6 +16,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.view.View;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -43,12 +44,12 @@ public class CompassActivity extends Activity implements SensorEventListener {
 	private Sensor compass;
 	
 	private ArrayList<Item> checkedItems;
-	private CompasArrow compasArrow;
+	private CompassArrow compassArrow;
 	
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_compass);
-		compasArrow = (CompasArrow) findViewById(R.id.compasArrow);
+		compassArrow = (CompassArrow) findViewById(R.id.compasArrow);
 		
 		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 		compass = sensorManager.getDefaultSensor(SENSOR_TYPE_BEARING);
@@ -64,6 +65,13 @@ public class CompassActivity extends Activity implements SensorEventListener {
 	@Override protected void onPause() {
 		sensorManager.unregisterListener(this);
 		super.onPause();
+	}
+	
+	/**
+	 * Method which allows to turn on/off radar bearing our facing.
+	 */
+	public void manageShowingRadarClick(View w) {
+		compassArrow.setVisibility(compassArrow.isShown() ? View.GONE : View.VISIBLE);
 	}
 	
 	/**
@@ -123,7 +131,7 @@ public class CompassActivity extends Activity implements SensorEventListener {
 		if (currentLatLng != null) {
 			point = mMap.getProjection().toScreenLocation(currentLatLng);
 		}
-		compasArrow.setDirection((int) event.values[0], point);
+		compassArrow.setDirection((int) event.values[0], point);
 	}
 	
 	/**

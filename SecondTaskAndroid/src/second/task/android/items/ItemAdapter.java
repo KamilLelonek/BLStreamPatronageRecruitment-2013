@@ -26,9 +26,12 @@ public class ItemAdapter extends ArrayAdapter<Item> implements Filterable {
 	}
 	
 	@Override public void add(Item item) {
-		items.add(item);
 		if (mFilter != null) {
-			mFilter.getOriginalValues().add(item);
+			List<Item> originalValues = mFilter.getOriginalValues();
+			originalValues.add(item);
+		}
+		else {
+			items.add(item);
 		}
 		notifyDataSetChanged();
 	}
