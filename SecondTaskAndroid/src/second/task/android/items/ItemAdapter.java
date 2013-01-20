@@ -13,7 +13,7 @@ import android.widget.Filter;
 import android.widget.Filterable;
 
 /**
- * Simple class used for representing Item object to list view. It also enables
+ * Simple class used for placing Item object to list view. It also enables
  * filtering by containing words/characters in item's name.
  */
 public class ItemAdapter extends ArrayAdapter<Item> implements Filterable {
@@ -53,10 +53,16 @@ public class ItemAdapter extends ArrayAdapter<Item> implements Filterable {
 		return items.indexOf(item);
 	}
 	
+	/**
+	 * @return current items collection
+	 */
 	public List<Item> getItems() {
 		return items;
 	}
 	
+	/**
+	 * @return current items collection, which are checked at the moment
+	 */
 	public ArrayList<Item> getCheckedItems() {
 		ArrayList<Item> checkedItems = new ArrayList<Item>();
 		
@@ -69,6 +75,11 @@ public class ItemAdapter extends ArrayAdapter<Item> implements Filterable {
 		return checkedItems;
 	}
 	
+	/**
+	 * Rplaces current items collection with new one
+	 * 
+	 * @param items new Items list
+	 */
 	public void setItems(List<Item> items) {
 		this.items.clear();
 		this.items.addAll(items);

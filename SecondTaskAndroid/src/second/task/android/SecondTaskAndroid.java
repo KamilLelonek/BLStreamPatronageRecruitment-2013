@@ -11,18 +11,18 @@ import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MenuItem.OnActionExpandListener;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SearchView;
+import android.widget.SearchView.OnQueryTextListener;
 
 public class SecondTaskAndroid extends FragmentActivity implements FragmentDialogAddEdit.NoticeDialogListener {
 	private final String STRING_ADD_ITEM = "add_item";
@@ -41,8 +41,6 @@ public class SecondTaskAndroid extends FragmentActivity implements FragmentDialo
 		setContentView(R.layout.activity_second_task_android);
 		
 		preferencesManager = new PreferencesManager(this);
-		
-		((EditText) findViewById(R.id.EditTextFilter)).addTextChangedListener(new FilteredTextWatcher());
 		
 		/* List initialization */
 		listView = (ListView) findViewById(R.id.ListView);
@@ -75,12 +73,6 @@ public class SecondTaskAndroid extends FragmentActivity implements FragmentDialo
 		super.onPause();
 	}
 	
-	public void showMapClick(View v) {
-		Intent showMapIntent = new Intent(SecondTaskAndroid.this, CompassActivity.class);
-		showMapIntent.putParcelableArrayListExtra(STRING_CHECKED_ITEMS, itemAdapter.getCheckedItems());
-		startActivity(showMapIntent);
-	}
-	
 	@Override public void onDialogPositiveClick(Item newItem, Item oldItem) {
 		if (oldItem != null) {
 			itemAdapter.remove(oldItem);
@@ -88,11 +80,17 @@ public class SecondTaskAndroid extends FragmentActivity implements FragmentDialo
 		itemAdapter.add(newItem);
 	}
 	
+	// TODO maybe I should create button in ActionBar and connect it with this method?
+	public void showMapClick(View w) {
+		Intent showMapIntent = new Intent(SecondTaskAndroid.this, CompassActivity.class);
+		showMapIntent.putParcelableArrayListExtra(STRING_CHECKED_ITEMS, itemAdapter.getCheckedItems());
+		startActivity(showMapIntent);
+	}
+	
 	/**
 	 * Context menu initialization. ContextMenu is used to edit or remove item
 	 * from list.
 	 */
-	
 	@Override public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		getMenuInflater().inflate(R.menu.menu_context_list, menu);
@@ -136,6 +134,37 @@ public class SecondTaskAndroid extends FragmentActivity implements FragmentDialo
 	 */
 	@Override public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_second_task_android, menu);
+		return intitializeOptionsMenu(menu);
+	}
+	
+	private boolean intitializeOptionsMenu(Menu menu) {
+		SearchView filterTextView = (SearchView) menu.findItem(R.id.menu_filter).getActionView();
+		filterTextView.setQueryHint(getString(R.string.label_filterHint));
+		filterTextView.setOnQueryTextListener(new OnQueryTextListener() {
+			
+			@Override public boolean onQueryTextSubmit(String query) {
+				itemAdapter.getFilter().filter(query);
+				return false;
+			}
+			
+			@Override public boolean onQueryTextChange(String newText) {
+				itemAdapter.getFilter().filter(newText);
+				return false;
+			}
+		});
+		
+		MenuItem menuItem = menu.findItem(R.id.menu_filter);
+		menuItem.setOnActionExpandListener(new OnActionExpandListener() {
+			@Override public boolean onMenuItemActionCollapse(MenuItem item) {
+				itemAdapter.revertData();
+				return true;
+			}
+			
+			@Override public boolean onMenuItemActionExpand(MenuItem item) {
+				return true;
+			}
+		});
+		
 		return true;
 	}
 	
@@ -146,19 +175,5 @@ public class SecondTaskAndroid extends FragmentActivity implements FragmentDialo
 				newFragment.show(getFragmentManager(), STRING_ADD_ITEM);
 		}
 		return super.onOptionsItemSelected(item);
-	}
-	
-	/**
-	 * Private inner class used to make list filterable by using EditText to
-	 * provide filter query.
-	 */
-	private class FilteredTextWatcher implements TextWatcher {
-		@Override public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
-			itemAdapter.getFilter().filter(cs);
-		}
-		
-		@Override public void beforeTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {}
-		
-		@Override public void afterTextChanged(Editable arg0) {}
 	}
 }

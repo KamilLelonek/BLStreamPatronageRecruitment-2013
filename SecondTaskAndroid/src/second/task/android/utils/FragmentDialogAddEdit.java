@@ -17,7 +17,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 public class FragmentDialogAddEdit extends DialogFragment {
-	private final String REGEX_FOR_DOUBLE_NUMBERS = "-?\\d+(.\\d+)?";
+	private final String REGEX_FOR_SIGNED_DOUBLE_NUMBERS = "-?\\d+(.\\d+)?";
 	
 	private Activity activity;
 	private View dialogView;
@@ -85,6 +85,7 @@ public class FragmentDialogAddEdit extends DialogFragment {
 					@Override public void onClick(DialogInterface dialog, int id) {
 						if (!isInputDataValid()) {
 							Toast.makeText(activity, R.string.alert_data_not_valid, Toast.LENGTH_SHORT).show();
+							// TODO maybe I shoud show this windows again?
 						}
 						else {
 							mListener.onDialogPositiveClick(
@@ -111,13 +112,20 @@ public class FragmentDialogAddEdit extends DialogFragment {
 		return currentItem;
 	}
 	
+	/**
+	 * Validates if provided data in EditTexts and Spinner is correct. Name
+	 * should be non zero-length string, Latitude and Longitude must be positive
+	 * or negative double numbers
+	 * 
+	 * @return validating result
+	 */
 	private boolean isInputDataValid() {
 		if (nameEditText.getText().toString().length() == 0) return false;
 		
 		EditText[] editTextArray = new EditText[] { latitudeEditText, longitudeEditText };
 		for (EditText editText : editTextArray) {
 			String temp = editText.getText().toString();
-			if (temp.length() == 0 || !temp.matches(REGEX_FOR_DOUBLE_NUMBERS)) return false;
+			if (temp.length() == 0 || !temp.matches(REGEX_FOR_SIGNED_DOUBLE_NUMBERS)) return false;
 		}
 		return spinnerItemColor.getSelectedItemPosition() != 0;
 	}

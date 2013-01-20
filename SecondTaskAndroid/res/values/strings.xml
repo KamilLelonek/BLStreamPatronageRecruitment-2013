@@ -6,6 +6,7 @@
 
 	<!-- Main Activity -->
 	<!-- Labels -->
+
 	<string name="label_filterHint">type in to filter</string>
 	<string name="label_itemName">Name</string>
 	<string name="label_itemLatitude">Latitude</string>
@@ -18,9 +19,9 @@
 	<string name="menu_delete">Delete</string>
 	<string name="menu_addItem">Add new item</string>
 	<string name="menu_settings">Settings</string>
-	<string name="menu_filter">type in to filter</string>
+	<string name="menu_filter">Filter list</string>
 	<!-- Alerts -->
-	<string name="alert_data_not_valid">Please fill all data correctly</string>
+	<string name="alert_data_not_valid">Data was not correct</string>
 	<string name="alert_item_exists">Item already exists</string>
 	<string name="alert_saving_error">Can\'t write list to internal storage.</string>
 	<string name="alert_reading_error">Can\'t read list from internal storage.</string>

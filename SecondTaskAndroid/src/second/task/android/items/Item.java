@@ -5,19 +5,22 @@ import java.io.Serializable;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
- * Simple class to represent item with its name and boolean value
+ * Simple class to represent particular item
  */
+/* implementing Serializable for saving in file and Parcelable for passing
+ * between activities */
 public class Item implements Serializable, Parcelable {
 	private static final long serialVersionUID = 1L;
 	
 	private String name;
+	private String color;
 	private double latitude;
 	private double longitude;
-	private String color;
 	private boolean checked;
 	
 	public Item(String name, double latitude, double longitude, String color) {
@@ -63,16 +66,23 @@ public class Item implements Serializable, Parcelable {
 		return checked;
 	}
 	
+	/**
+	 * Changing item check state.
+	 */
 	/* if (checked == true) checked = false; else checked = true; */
 	public void switchChecked() {
 		this.checked ^= true;
 	}
 	
 	/* Returns simple marker to draw on map. */
-	public MarkerOptions getMarkerOptions() {
-		return new MarkerOptions().position(new LatLng(latitude, longitude)).title(name);
+	public MarkerOptions getMarker() {
+		// TODO add specific icon when needed:
+		// .icon(BitmapDescriptorFactory.fromResource(R.drawable.point));
+		return new MarkerOptions().position(new LatLng(latitude, longitude)).title(name).icon(BitmapDescriptorFactory.defaultMarker());
 	}
 	
+	/* toString and equals added to make renaming, deleting and adding operation
+	 * easier */
 	@Override public String toString() {
 		return getName();
 	}
@@ -85,7 +95,6 @@ public class Item implements Serializable, Parcelable {
 	/**
 	 * Parcelable section
 	 */
-	
 	@Override public int describeContents() {
 		return 0;
 	}
