@@ -10,19 +10,16 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		class="com.google.android.gms.maps.MapFragment"
-		map:cameraTargetLat="51.07"
-		map:cameraTargetLng="21.02"
+		map:cameraTargetLat="51.10"
+		map:cameraTargetLng="17.02"
 		map:cameraZoom="10"
 		map:mapType="terrain"
 		map:uiCompass="true"
-		map:uiRotateGestures="true"
-		map:uiScrollGestures="true"
-		map:uiTiltGestures="true"
-		map:uiZoomControls="true"
-		map:uiZoomGestures="true" />
+		map:uiRotateGestures="false"
+		map:uiZoomControls="true" />
 
-	<second.task.android.utils.CompassArrow
-		android:id="@+id/compasArrow"
+	<second.task.android.utils.CompassRadar
+		android:id="@+id/compasRadar"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:layout_gravity="center" />

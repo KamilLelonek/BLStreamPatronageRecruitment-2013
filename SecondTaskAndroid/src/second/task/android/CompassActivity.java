@@ -3,7 +3,7 @@ package second.task.android;
 import java.util.ArrayList;
 
 import second.task.android.items.Item;
-import second.task.android.utils.CompassArrow;
+import second.task.android.utils.CompassRadar;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -18,11 +18,16 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.GroundOverlay;
+import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -38,18 +43,23 @@ public class CompassActivity extends Activity implements SensorEventListener {
 	/* Map section */
 	private GoogleMap mMap;
 	private LatLng currentLatLng;
+	private GroundOverlay groundOverlay;
 	
 	/* Sensor section */
 	private SensorManager sensorManager;
 	private Sensor compass;
 	
 	private ArrayList<Item> checkedItems;
-	private CompassArrow compassArrow;
+	private CompassRadar compassRadar;
 	
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		try {
+			MapsInitializer.initialize(getApplicationContext());
+		}
+		catch (GooglePlayServicesNotAvailableException e) {}
 		setContentView(R.layout.activity_compass);
-		compassArrow = (CompassArrow) findViewById(R.id.compasArrow);
+		compassRadar = (CompassRadar) findViewById(R.id.compasRadar);
 		
 		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 		compass = sensorManager.getDefaultSensor(SENSOR_TYPE_BEARING);
@@ -59,11 +69,11 @@ public class CompassActivity extends Activity implements SensorEventListener {
 	
 	@Override protected void onResume() {
 		super.onResume();
-		sensorManager.registerListener(this, compass, SensorManager.SENSOR_DELAY_NORMAL);
+		sconnectAccelerometerAndShowCompass();
 	}
 	
 	@Override protected void onPause() {
-		sensorManager.unregisterListener(this);
+		disconnectAccelerometerAndHideCompass();
 		super.onPause();
 	}
 	
@@ -71,7 +81,32 @@ public class CompassActivity extends Activity implements SensorEventListener {
 	 * Method which allows to turn on/off radar bearing our facing.
 	 */
 	public void manageShowingRadarClick(View w) {
-		compassArrow.setVisibility(compassArrow.isShown() ? View.GONE : View.VISIBLE);
+		if (compassRadar.isShown()) {
+			disconnectAccelerometerAndHideCompass();
+		}
+		else {
+			sconnectAccelerometerAndShowCompass();
+		}
+	}
+	
+	/**
+	 * Registers accelerometer listener and starts drawing map overlay bearing
+	 * current position;
+	 */
+	private void sconnectAccelerometerAndShowCompass() {
+		sensorManager.registerListener(this, compass, SensorManager.SENSOR_DELAY_GAME);
+		compassRadar.setVisibility(View.VISIBLE);
+		groundOverlay = mMap.addGroundOverlay(new GroundOverlayOptions().image(BitmapDescriptorFactory.fromResource(R.drawable.ic_menu_popup))
+				.position(new LatLng(0., 0.), 200));
+	}
+	
+	/**
+	 * Unregisters accelerometer listener and stops drawing map overlays
+	 */
+	private void disconnectAccelerometerAndHideCompass() {
+		compassRadar.setVisibility(View.GONE);
+		sensorManager.unregisterListener(this);
+		groundOverlay.remove();
 	}
 	
 	/**
@@ -84,6 +119,7 @@ public class CompassActivity extends Activity implements SensorEventListener {
 				mMap.setMyLocationEnabled(true);
 				/* Setting up location listener for map */
 				mMap.setLocationSource(new FollowMeLocationSource());
+				mMap.setIndoorEnabled(true);
 				
 				/* UI Settings */
 				UiSettings uiSettings = mMap.getUiSettings();
@@ -127,11 +163,14 @@ public class CompassActivity extends Activity implements SensorEventListener {
 	@Override public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 	
 	@Override public void onSensorChanged(SensorEvent event) {
-		Point point = null;
 		if (currentLatLng != null) {
-			point = mMap.getProjection().toScreenLocation(currentLatLng);
+			Point point = mMap.getProjection().toScreenLocation(currentLatLng);
+			compassRadar.setDirection((int) event.values[0], point);
+			
+			/* Arrow overlay pined to current location */
+			groundOverlay.setPosition(currentLatLng);
+			groundOverlay.setBearing(event.values[0]);
 		}
-		compassArrow.setDirection((int) event.values[0], point);
 	}
 	
 	/**

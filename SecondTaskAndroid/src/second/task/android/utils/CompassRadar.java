@@ -14,7 +14,7 @@ import android.widget.ImageView;
  * This class uses to represent radar graphic on map that baring to current
  * phone direction.
  */
-public class CompassArrow extends ImageView {
+public class CompassRadar extends ImageView {
 	private Paint paint;
 	private Bitmap radarBitmap;
 	private Point point;	// current location on map
@@ -23,7 +23,7 @@ public class CompassArrow extends ImageView {
 	private int drawingX;
 	private int drawingY;
 	
-	public CompassArrow(Context context, AttributeSet attrs) {
+	public CompassRadar(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		
 		// reading bitmap from drawable resource
@@ -32,15 +32,13 @@ public class CompassArrow extends ImageView {
 	}
 	
 	public void setDirection(int direction, Point point) {
-		if (point != null) {
-			// setting up drawing points
-			this.point = point;
-			this.drawingX = point.x - radarBitmap.getWidth() / 2;
-			this.drawingY = point.y - radarBitmap.getHeight();
-			
-			this.direction = direction;
-			this.invalidateDrawable(getDrawable());
-		}
+		// setting up drawing points
+		this.point = point;
+		this.drawingX = point.x - radarBitmap.getWidth() / 2;
+		this.drawingY = point.y - radarBitmap.getHeight();
+		
+		this.direction = direction;
+		this.invalidateDrawable(getDrawable());
 	}
 	
 	/**
