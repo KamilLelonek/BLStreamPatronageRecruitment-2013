@@ -27,7 +27,7 @@ public class FragmentDialogAddEdit extends DialogFragment {
 	private Spinner spinnerItemColor;
 	
 	/* The activity that creates an instance of this dialog fragment must
-	 * implement this interface in order to receive event callbacks. Each method
+	 * implement this interface in order to receive event callback. Each method
 	 * passes the DialogFragment in case the host needs to query it. */
 	public interface NoticeDialogListener {
 		void onDialogPositiveClick(Item newItem, Item oldItem);
@@ -36,14 +36,16 @@ public class FragmentDialogAddEdit extends DialogFragment {
 	// Use this instance of the interface to deliver action events
 	NoticeDialogListener mListener;
 	
-	// Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
+	// Override the Fragment.onAttach() method to instantiate the
+	// NoticeDialogListener
 	@Override public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		this.activity = activity;
 		
 		// Verify that the host activity implements the callback interface
 		try {
-			// Instantiate the NoticeDialogListener so we can send events to the host
+			// Instantiate the NoticeDialogListener so we can send events to the
+			// host
 			mListener = (NoticeDialogListener) activity;
 		}
 		catch (ClassCastException e) {
@@ -76,7 +78,8 @@ public class FragmentDialogAddEdit extends DialogFragment {
 			nameEditText.selectAll();
 			latitudeEditText.setText(String.valueOf(currentItem.getLatitude()));
 			longitudeEditText.setText(String.valueOf(currentItem.getLongitude()));
-			spinnerItemColor.setSelection(Arrays.asList(getResources().getStringArray(R.array.colors)).indexOf(currentItem.getColor().toUpperCase()));
+			spinnerItemColor.setSelection(Arrays.asList(getResources().getStringArray(R.array.colors)).indexOf(
+					currentItem.getColor().toUpperCase()));
 		}
 		
 		// Build custom alert dialog, create it and return as a result
@@ -85,13 +88,14 @@ public class FragmentDialogAddEdit extends DialogFragment {
 					@Override public void onClick(DialogInterface dialog, int id) {
 						if (!isInputDataValid()) {
 							Toast.makeText(activity, R.string.alert_data_not_valid, Toast.LENGTH_SHORT).show();
-							// TODO maybe I shoud show this windows again?
+							// TODO maybe I should show this windows
+							// again?
 						}
 						else {
 							mListener.onDialogPositiveClick(
-									new Item(nameEditText.getText().toString(), Double.valueOf(latitudeEditText.getText().toString()), Double
-											.valueOf(longitudeEditText.getText().toString()), spinnerItemColor.getSelectedItem().toString()),
-									currentItem);
+									new Item(nameEditText.getText().toString(), Double.valueOf(latitudeEditText
+											.getText().toString()), Double.valueOf(longitudeEditText.getText()
+											.toString()), spinnerItemColor.getSelectedItem().toString()), currentItem);
 						}
 					}
 				}).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {

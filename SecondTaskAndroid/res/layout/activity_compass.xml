@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:map="http://schemas.android.com/apk/res-auto"
-	android:id="@+id/frameLayoutMapCompass"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent" >
+    xmlns:map="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/frameLayoutMapCompass"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
-	<fragment
-		android:id="@+id/map"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		class="com.google.android.gms.maps.MapFragment"
-		map:cameraTargetLat="51.10"
-		map:cameraTargetLng="17.02"
-		map:cameraZoom="10"
-		map:mapType="terrain"
-		map:uiCompass="true"
-		map:uiRotateGestures="false"
-		map:uiZoomControls="true" />
+    <fragment
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        class="com.google.android.gms.maps.MapFragment"
+        map:cameraTargetLat="51.10"
+        map:cameraTargetLng="17.02"
+        map:cameraZoom="10"
+        map:mapType="terrain"
+        map:uiCompass="true"
+        map:uiRotateGestures="false"
+        map:uiZoomControls="true" />
 
-	<second.task.android.utils.CompassRadar
-		android:id="@+id/compasRadar"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:layout_gravity="center" />
+    <second.task.android.utils.CompassRadar
+        android:id="@+id/compasRadar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
 
-	<ImageButton
-		android:id="@+id/imageButtonRadar"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="center_vertical|right"
-		android:layout_margin="12dp"
-		android:background="@drawable/map_button_selector"
-		android:contentDescription="@+id/imageButtonRadar"
-		android:onClick="manageShowingRadarClick"
-		android:src="@drawable/ic_menu_popup" />
+    <ImageButton
+        android:id="@+id/imageButtonRadar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|right"
+        android:layout_margin="12dp"
+        android:background="@drawable/map_button_selector"
+        android:contentDescription="@+id/imageButtonRadar"
+        android:onClick="manageShowingRadarClick"
+        android:src="@drawable/ic_menu_popup" />
 
 </FrameLayout>

@@ -10,13 +10,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.Filter;
-import android.widget.Filterable;
 
 /**
  * Simple class used for placing Item object to list view. It also enables
  * filtering by containing words/characters in item's name.
  */
-public class ItemAdapter extends ArrayAdapter<Item> implements Filterable {
+public class ItemAdapter extends ArrayAdapter<Item> {
 	private List<Item> items;
 	private ItemFilter mFilter;
 	
@@ -81,7 +80,8 @@ public class ItemAdapter extends ArrayAdapter<Item> implements Filterable {
 	/**
 	 * Rplaces current items collection with new one
 	 * 
-	 * @param items new Items list
+	 * @param items
+	 *            new Items list
 	 */
 	public void setItems(List<Item> items) {
 		this.items.clear();
@@ -97,13 +97,15 @@ public class ItemAdapter extends ArrayAdapter<Item> implements Filterable {
 		notifyDataSetChanged();
 	}
 	
-	@Override public View getView(int position, View convertView, ViewGroup parent) {
+	@Override public View getView(int position, View convertView,
+			ViewGroup parent) {
 		View listItem = super.getView(position, convertView, parent);
 		CheckedTextView checkBox = (CheckedTextView) listItem.getTag();
 		
 		/* A little bit of optimization by using modified ViewHolder pattern */
 		if (checkBox == null) {
-			checkBox = (CheckedTextView) listItem.findViewById(android.R.id.text1);
+			checkBox = (CheckedTextView) listItem
+					.findViewById(android.R.id.text1);
 			listItem.setTag(checkBox);
 		}
 		
@@ -113,7 +115,8 @@ public class ItemAdapter extends ArrayAdapter<Item> implements Filterable {
 		checkBox.setChecked(currentItem.isChecked());
 		checkBox.setText(currentItem.getName());
 		
-		// It works but doesn't look nice // TODO Maybe implement (uncomment) it later
+		// It works but doesn't look nice // TODO Maybe implement (uncomment) it
+		// later
 		// checkBox.setBackgroundColor(Color.parseColor(currentItem.getColor()));
 		
 		return listItem;
@@ -125,8 +128,10 @@ public class ItemAdapter extends ArrayAdapter<Item> implements Filterable {
 	 * reverting previous view.
 	 */
 	public void revertData() {
-		if (mFilter != null) {	// filter has been used already, data in listView may be changed
-			List<Item> originalValues = ((ItemFilter) getFilter()).getOriginalValues();
+		if (mFilter != null) { // filter has been used already, data in listView
+								// may be changed
+			List<Item> originalValues = ((ItemFilter) getFilter())
+					.getOriginalValues();
 			if (originalValues != null) {
 				items = originalValues;
 				notifyDataSetChanged();
@@ -145,8 +150,10 @@ public class ItemAdapter extends ArrayAdapter<Item> implements Filterable {
 	 * Inner class used to filtering list of items
 	 */
 	private class ItemFilter extends Filter {
-		// A copy of the original items array, initialized from and then used instead as soon as
-		// the mFilter ArrayFilter is used. items will then only contain the filtered values.
+		// A copy of the original items array, initialized from and then used
+		// instead as soon as
+		// the mFilter ArrayFilter is used. items will then only contain the
+		// filtered values.
 		private List<Item> mOriginalValues;
 		
 		public List<Item> getOriginalValues() {
@@ -186,7 +193,8 @@ public class ItemAdapter extends ArrayAdapter<Item> implements Filterable {
 						final String[] words = valueText.split(" ");
 						final int wordCount = words.length;
 						
-						// Start at index 0, in case valueText starts with space(s)
+						// Start at index 0, in case valueText starts with
+						// space(s)
 						for (int k = 0; k < wordCount; k++) {
 							if (words[k].contains(prefixString)) {
 								newValues.add(value);
@@ -202,8 +210,9 @@ public class ItemAdapter extends ArrayAdapter<Item> implements Filterable {
 			return results;
 		}
 		
-		@SuppressWarnings("unchecked") @Override protected void publishResults(CharSequence constraint, FilterResults results) {
-			//noinspection unchecked
+		@SuppressWarnings("unchecked") @Override protected void publishResults(
+				CharSequence constraint, FilterResults results) {
+			// noinspection unchecked
 			items = (List<Item>) results.values;
 			if (results.count > 0) {
 				notifyDataSetChanged();
