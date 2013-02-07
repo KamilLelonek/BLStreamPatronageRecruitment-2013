@@ -1,17 +1,19 @@
 package third.task.android.compass;
 
+import third.task.android.R;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
 /**
  * This class uses to represent radar graphic on map that baring to current
- * phone direction.
+ * phone direction. ImageView does not represent any graphics but it facilitates
+ * canvas where radar will be drawn.
  */
 public class CompassRadar extends ImageView implements CompassInterface {
 	private Paint paint;
@@ -22,15 +24,26 @@ public class CompassRadar extends ImageView implements CompassInterface {
 	private int drawingX;
 	private int drawingY;
 	
+	private boolean bitmapIsShown;
+	
 	public CompassRadar(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		bitmapIsShown = true;
 		
 		// reading bitmap from drawable resource
-		radarBitmap = ((BitmapDrawable) getDrawable()).getBitmap();
+		radarBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.radar);
+		// setting preview
+		setImageBitmap(radarBitmap);
 		paint = new Paint();
 	}
 	
 	@Override public void setDirection(int direction, Point point) {
+		// clearing preview
+		if (bitmapIsShown) {
+			setImageBitmap(null);
+			bitmapIsShown = false;
+		}
+		
 		// setting up drawing points
 		this.point = point;
 		this.drawingX = point.x - radarBitmap.getWidth() / 2;
@@ -56,5 +69,12 @@ public class CompassRadar extends ImageView implements CompassInterface {
 		}
 		
 		super.onDraw(canvas);
+	}
+	
+	/**
+	 * @return current compass bearing direction
+	 */
+	public int getDirection() {
+		return direction;
 	}
 }

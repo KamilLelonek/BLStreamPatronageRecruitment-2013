@@ -53,17 +53,17 @@ public class CompassActivity extends Activity implements SensorEventListener {
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_compass);
-		//		compassRadar = (CompassInterface) findViewById(R.id.compasRadar);
-		//		
-		//		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-		//		compass = sensorManager.getDefaultSensor(SENSOR_TYPE_BEARING);
-		//		
-		//		setUpMapIfNeeded();
+		compassRadar = (CompassInterface) findViewById(R.id.compassRadar);
+		
+		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+		compass = sensorManager.getDefaultSensor(SENSOR_TYPE_BEARING);
+		
+		setUpMapIfNeeded();
 	}
 	
 	@Override protected void onResume() {
 		super.onResume();
-		//sconnectAccelerometerAndShowCompass();
+		connectAccelerometerAndShowCompass();
 	}
 	
 	@Override protected void onPause() {
@@ -79,7 +79,7 @@ public class CompassActivity extends Activity implements SensorEventListener {
 			disconnectAccelerometerAndHideCompass();
 		}
 		else {
-			sconnectAccelerometerAndShowCompass();
+			connectAccelerometerAndShowCompass();
 		}
 	}
 	
@@ -87,7 +87,7 @@ public class CompassActivity extends Activity implements SensorEventListener {
 	 * Registers accelerometer listener and starts drawing map overlay bearing
 	 * current position;
 	 */
-	private void sconnectAccelerometerAndShowCompass() {
+	private void connectAccelerometerAndShowCompass() {
 		sensorManager.registerListener(this, compass, SensorManager.SENSOR_DELAY_GAME);
 		compassRadar.setVisibility(View.VISIBLE);
 		groundOverlay = mMap.addGroundOverlay(new GroundOverlayOptions().image(

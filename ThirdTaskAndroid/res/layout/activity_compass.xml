@@ -18,13 +18,6 @@
         map:uiRotateGestures="false"
         map:uiZoomControls="true" />
 
-    <third.task.android.compass.CompassRadar
-        android:id="@+id/compasRadar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:src="@drawable/radar" />
-
     <ImageButton
         android:id="@+id/imageButtonRadar"
         android:layout_width="wrap_content"
@@ -35,5 +28,11 @@
         android:contentDescription="@+id/imageButtonRadar"
         android:onClick="manageShowingRadarClick"
         android:src="@drawable/ic_menu_popup" />
+
+    <third.task.android.compass.CompassRadar
+        android:id="@+id/compassRadar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
 
 </FrameLayout>
