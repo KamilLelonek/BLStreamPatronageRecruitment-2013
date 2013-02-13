@@ -14,6 +14,7 @@ import third.task.android.items.Item;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -23,9 +24,10 @@ import android.widget.Toast;
 public class PreferencesManager {
 	private final String STRING_CITIES = "cities";
 	private final String STRING_FIRST_RUN = "isFirstRun";
-	private final String STRING_FILE_DIRECTORY = "/FirstProject";
+	private final String STRING_FILE_DIRECTORY = "/BLStream";
 	private final String STRING_FILE_NAME = "savedList.ext";
 	private final String STRING_PATH = "path";
+	private final String STRING_LOG_TAG = "PreferencesManager";
 	
 	private SharedPreferences sharedPreferences;
 	private SharedPreferences.Editor sharedPreferencesEditor;
@@ -60,7 +62,8 @@ public class PreferencesManager {
 	 * @return file to keep application data
 	 */
 	private File getSaveFileDirectory() {
-		File savedLocationsDirectory = new File(Environment.getExternalStorageDirectory().getPath().concat(STRING_FILE_DIRECTORY));
+		File savedLocationsDirectory = new File(Environment.getExternalStorageDirectory().getPath()
+			.concat(STRING_FILE_DIRECTORY));
 		savedLocationsDirectory.mkdirs();
 		return new File(savedLocationsDirectory, STRING_FILE_NAME);
 	}
@@ -75,7 +78,7 @@ public class PreferencesManager {
 	private String getFilePath() {
 		String path = sharedPreferences.getString(STRING_PATH, "");
 		if (path.length() == 0) {
-			path = getSaveFileDirectory().getAbsolutePath(); 	// should be /storage/sdcard0/FirstProject/savedList.ext
+			path = getSaveFileDirectory().getAbsolutePath(); // should be /storage/sdcard0/BLStream/savedList.ext
 			sharedPreferencesEditor.putString(STRING_PATH, path);
 			sharedPreferencesEditor.commit();
 		}
@@ -85,9 +88,12 @@ public class PreferencesManager {
 	/**
 	 * Serializes list of items
 	 * 
-	 * @param list list of items to serialize
+	 * @param list
+	 *            list of items to serialize
 	 */
 	public void serializeQuotes(List<Item> list) {
+		Log.d(STRING_LOG_TAG, "Saving items to file.");
+		
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(getFilePath()));
 			oos.writeObject(list);
@@ -104,6 +110,8 @@ public class PreferencesManager {
 	 * @return deserialized list of items
 	 */
 	@SuppressWarnings("unchecked") public List<Item> deserializeQuotes() {
+		Log.d(STRING_LOG_TAG, "Reading items from file.");
+		
 		List<Item> list = null;
 		try {
 			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(getFilePath()));

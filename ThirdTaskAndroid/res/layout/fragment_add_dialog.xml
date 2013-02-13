@@ -1,42 +1,55 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/edit_name"
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content"
-	android:layout_gravity="center"
-	android:gravity="center"
-	android:orientation="vertical" >
+    android:id="@+id/edit_name"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:orientation="vertical" >
 
-	<EditText
-		android:id="@+id/EditTextItemName"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_margin="5dp"
-		android:hint="@string/label_itemName"
-		android:imeOptions="actionDone"
-		android:inputType="textCapWords" />
+    <EditText
+        android:id="@+id/EditTextItemName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:hint="@string/label_itemName"
+        android:imeOptions="actionDone"
+        android:inputType="textCapWords" />
 
-	<EditText
-		android:id="@+id/EditTextItemLatitude"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_margin="5dp"
-		android:hint="@string/label_itemLatitude"
-		android:imeOptions="actionDone"
-		android:inputType="numberDecimal" />
+    <EditText
+        android:id="@+id/EditTextItemLatitude"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:hint="@string/label_itemLatitude"
+        android:imeOptions="actionDone"
+        android:inputType="numberDecimal" />
 
-	<EditText
-		android:id="@+id/EditTextItemLongitude"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_margin="5dp"
-		android:hint="@string/label_itemLongitude"
-		android:imeOptions="actionDone"
-		android:inputType="numberDecimal" />
+    <EditText
+        android:id="@+id/EditTextItemLongitude"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:hint="@string/label_itemLongitude"
+        android:imeOptions="actionDone"
+        android:inputType="numberDecimal" />
 
-	<Spinner
-		android:id="@+id/SpinnerItemColor"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:entries="@array/colors" />
+    <Spinner
+        android:id="@+id/SpinnerItemColor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/colors" />
+
+    <Button
+        android:id="@+id/buttonCancelAlertDialog"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@android:string/cancel" />
+
+    <Button
+        android:id="@+id/buttonOkAlertDialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@android:string/ok" />
 
 </LinearLayout>

@@ -11,6 +11,7 @@ import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -27,6 +28,7 @@ import android.widget.SearchView.OnQueryTextListener;
 public class ThirdTaskAndroid extends FragmentActivity implements FragmentDialogAddEdit.NoticeDialogListener {
 	private final String STRING_ADD_ITEM = "add_item";
 	private final String STRING_EDIT_ITEM = "edit_item";
+	private final String STRING_LOG_TAG = "ThirdTaskAndroid";
 	public static final String STRING_CURRENT_ITEM = "current_item";
 	public static final String STRING_CHECKED_ITEMS = "checked_items";
 	
@@ -55,13 +57,19 @@ public class ThirdTaskAndroid extends FragmentActivity implements FragmentDialog
 	/* Serializing items */
 	@Override protected void onResume() {
 		super.onResume();
+		
 		if (!preferencesManager.isFirstRun()) {
+			Log.d(STRING_LOG_TAG, "Resuming application state.");
+			
 			items = preferencesManager.deserializeQuotes();
 		}
 		else {
+			Log.d(STRING_LOG_TAG, "First application run!");
+			
 			items = ItemModel.getItems();
 			preferencesManager.setFirstRunFalse();
 		}
+		
 		itemAdapter = new ItemAdapter(this, items);
 		listView.setAdapter(itemAdapter);
 	}
@@ -80,8 +88,7 @@ public class ThirdTaskAndroid extends FragmentActivity implements FragmentDialog
 		itemAdapter.add(newItem);
 	}
 	
-	// TODO maybe I should create button in ActionBar and connect it with this method?
-	public void showMapClick(View w) {
+	public void showMapClick(@SuppressWarnings("unused") View w) {
 		Intent showMapIntent = new Intent(ThirdTaskAndroid.this, CompassActivity.class);
 		showMapIntent.putParcelableArrayListExtra(STRING_CHECKED_ITEMS, itemAdapter.getCheckedItems());
 		startActivity(showMapIntent);
@@ -115,7 +122,8 @@ public class ThirdTaskAndroid extends FragmentActivity implements FragmentDialog
 	 * Helper method which edits selected item by showing dialog with filled
 	 * views from selected item.
 	 * 
-	 * @param itemToEdit item that need to be edited
+	 * @param itemToEdit
+	 *            item that need to be edited
 	 * @return true to handle context menu for selected item in list view
 	 */
 	private boolean editItem(Item itemToEdit) {

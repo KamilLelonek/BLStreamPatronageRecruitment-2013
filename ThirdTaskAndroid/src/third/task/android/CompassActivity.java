@@ -16,6 +16,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -37,6 +38,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 public class CompassActivity extends Activity implements SensorEventListener {
 	private final int ONE_SEC_IN_MILISEC = 1000;
 	private final int SENSOR_TYPE_BEARING = 3;
+	private final String STRING_LOG_TAG = "CompassActivity";
 	
 	/* Map section */
 	private GoogleMap mMap;
@@ -88,6 +90,8 @@ public class CompassActivity extends Activity implements SensorEventListener {
 	 * current position;
 	 */
 	private void connectAccelerometerAndShowCompass() {
+		Log.d(STRING_LOG_TAG, "Turning on compass.");
+		
 		sensorManager.registerListener(this, compass, SensorManager.SENSOR_DELAY_GAME);
 		compassRadar.setVisibility(View.VISIBLE);
 		groundOverlay = mMap.addGroundOverlay(new GroundOverlayOptions().image(
@@ -98,6 +102,8 @@ public class CompassActivity extends Activity implements SensorEventListener {
 	 * Unregisters accelerometer listener and stops drawing map overlays
 	 */
 	private void disconnectAccelerometerAndHideCompass() {
+		Log.d(STRING_LOG_TAG, "Turning off compass.");
+		
 		compassRadar.setVisibility(View.GONE);
 		sensorManager.unregisterListener(this);
 		groundOverlay.remove();
@@ -110,6 +116,8 @@ public class CompassActivity extends Activity implements SensorEventListener {
 		if (mMap == null) {
 			mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
 			if (mMap != null) {
+				Log.d(STRING_LOG_TAG, "Preparing map for first use.");
+				
 				mMap.setMyLocationEnabled(true);
 				/* Setting up location listener for map */
 				mMap.setLocationSource(new FollowMeLocationSource());
@@ -181,18 +189,24 @@ public class CompassActivity extends Activity implements SensorEventListener {
 		}
 		
 		@Override public void activate(OnLocationChangedListener onLocationChangedListener) {
+			Log.d(STRING_LOG_TAG, "Activating location's changes listening.");
+			
 			this.onLocationChangedListener = onLocationChangedListener;
 			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, ONE_SEC_IN_MILISEC, 1, this);
 			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, ONE_SEC_IN_MILISEC, 1, this);
 		}
 		
 		@Override public void deactivate() {
+			Log.d(STRING_LOG_TAG, "Deactivating location's changes listening.");
+			
 			this.onLocationChangedListener = null;
 			locationManager.removeUpdates(this);
 		}
 		
 		/* When location is changes camera is moving and lines are being redrawn */
 		@Override public void onLocationChanged(Location location) {
+			Log.d(STRING_LOG_TAG, "Location has been changed.");
+			
 			onLocationChangedListener.onLocationChanged(location);
 			drawLines(location);
 			setCurrentLatLng(location);
