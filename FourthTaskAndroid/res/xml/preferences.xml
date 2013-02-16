@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="preferences_autorefresh_checkbox"
+        android:summary="@string/preferences_autorefresh_checkbox_summary"
+        android:title="@string/preferences_autorefresh_checkbox_title" />
+
+    <EditTextPreference
+        android:defaultValue="10"
+        android:dependency="preferences_autorefresh_checkbox"
+        android:key="preferences_autorefresh_edittext"
+        android:summary="@string/preferences_autorefresh_edittext_summary"
+        android:title="@string/preferences_autorefresh_edittext_title" />
+
+</PreferenceScreen>

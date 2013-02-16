@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- General -->
+    <string name="app_name">FourthTaskAndroid</string>
+
+    <!-- Labels -->
+    <string name="label_filterHint">type in to filter</string>
+    <string name="label_itemName">Name</string>
+    <string name="label_itemLatitude">Latitude</string>
+    <string name="label_itemLongitude">Longitude</string>
+    <string name="label_itemColor">Color</string>
+    <string name="label_showMap">Show selected items on map</string>
+    <string name="label_manageItem">Manage item</string>
+    <string name="label_list">List</string>
+    <string name="label_map">Map</string>
+    <!-- Menus -->
+    <string name="menu_edit">Edit</string>
+    <string name="menu_delete">Delete</string>
+    <string name="menu_addItem">Add new item</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_filter">Filter list</string>
+    <string name="menu_refresh">Refresh</string>
+    <!-- Alerts -->
+    <string name="alert_data_not_valid">Provided data is not correct</string>
+    <string name="alert_item_exists">Item already exists</string>
+    <string name="alert_saving_error">Can\'t write list to internal storage.</string>
+    <string name="alert_reading_error">Can\'t read list from internal storage.</string>
+
+</resources>
