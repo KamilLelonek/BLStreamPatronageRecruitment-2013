@@ -3,27 +3,32 @@ package fourth.task.android.items;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
+import fourth.task.android.R;
 
 /**
  * Simple class used for placing Item object to list view. It also enables
  * filtering by containing words/characters in item's name.
  */
-public class ItemAdapter extends ArrayAdapter<Item> {
+public class ItemAdapter extends BaseAdapter implements Filterable {
 	private List<Item> items;
 	private ItemFilter mFilter;
+	private LayoutInflater inflater;
 	
-	public ItemAdapter(Context context, List<Item> items) {
-		super(context, android.R.layout.simple_list_item_1, items);
+	public ItemAdapter(Activity activity, List<Item> items) {
 		this.items = items;
+		inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 	
-	@Override public void add(Item item) {
+	public void add(Item item) {
 		if (mFilter != null) {
 			List<Item> originalValues = mFilter.getOriginalValues();
 			originalValues.add(item);
@@ -34,7 +39,7 @@ public class ItemAdapter extends ArrayAdapter<Item> {
 		notifyDataSetChanged();
 	}
 	
-	@Override public void remove(Item item) {
+	public void remove(Item item) {
 		items.remove(item);
 		if (mFilter != null) {
 			mFilter.getOriginalValues().remove(item);
@@ -50,8 +55,12 @@ public class ItemAdapter extends ArrayAdapter<Item> {
 		return items.get(position);
 	}
 	
-	@Override public int getPosition(Item item) {
+	public int getPosition(Item item) {
 		return items.indexOf(item);
+	}
+	
+	@Override public long getItemId(int position) {
+		return position;
 	}
 	
 	/**
@@ -71,8 +80,7 @@ public class ItemAdapter extends ArrayAdapter<Item> {
 	/**
 	 * Replaces current items collection with new one
 	 * 
-	 * @param items
-	 *            new Items list
+	 * @param items new Items list
 	 */
 	public void setItems(List<Item> items) {
 		this.items.clear();
@@ -81,25 +89,41 @@ public class ItemAdapter extends ArrayAdapter<Item> {
 	}
 	
 	@Override public View getView(int position, View convertView, ViewGroup parent) {
-		View listItem = super.getView(position, convertView, parent);
-		TextView textView = (TextView) listItem.getTag();
+		View listItem = convertView;
+		if (convertView == null) {
+			listItem = inflater.inflate(R.layout.item_text_view, null);
+		}
+		ViewHolder viewHolder = (ViewHolder) listItem.getTag();
 		
 		/* A little bit of optimization by using modified ViewHolder pattern */
-		if (textView == null) {
-			textView = (TextView) listItem.findViewById(android.R.id.text1);
-			listItem.setTag(textView);
+		if (viewHolder == null) {
+			viewHolder = new ViewHolder();
+			
+			viewHolder.textViewName = (TextView) listItem.findViewById(R.id.textViewName);
+			viewHolder.textViewWeather = (TextView) listItem.findViewById(R.id.textViewWeather);
+			viewHolder.textViewTemperature = (TextView) listItem.findViewById(R.id.textViewTemperature);
+			
+			listItem.setTag(viewHolder);
 		}
 		
 		// keeping textView in item tag allows to avoid invoking findViewById
 		// every time when it is needed to make rendering faster
 		Item currentItem = getItem(position);
-		textView.setText(currentItem.getName());
+		viewHolder.textViewName.setText(currentItem.getName());
+		viewHolder.textViewWeather.setText(currentItem.getWeather());
+		viewHolder.textViewTemperature.setText(currentItem.getTemperature());
 		
 		// It works but doesn't look nice 
 		// TODO Maybe implement (uncomment) it later
-		// textView.setBackgroundColor(Color.parseColor(currentItem.getColor()));
+		// listItem.setBackgroundColor(Color.parseColor(currentItem.getColor()));
 		
 		return listItem;
+	}
+	
+	private class ViewHolder {
+		TextView textViewName;
+		TextView textViewWeather;
+		TextView textViewTemperature;
 	}
 	
 	/**

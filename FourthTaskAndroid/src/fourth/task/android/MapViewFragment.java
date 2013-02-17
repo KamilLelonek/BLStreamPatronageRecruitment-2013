@@ -4,11 +4,15 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +27,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import fourth.task.android.items.Item;
+import fourth.task.android.services.WeatherService;
 
 public class MapViewFragment extends Fragment {
 	private final int ONE_SEC_IN_MILISEC = 1000;
@@ -30,17 +35,40 @@ public class MapViewFragment extends Fragment {
 	
 	private Activity activity;
 	private GoogleMap mMap;
+	private LocalBroadcastManager localBroadcastManager;
+	private BroadcastReceiver broadcastReceiver;
 	
 	// For saving view state.
 	private View viewHolder;
 	
+	@Override public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		broadcastReceiver = new BroadcastReceiver() {
+			@Override public void onReceive(Context context, Intent intent) {
+				// Refresh map view
+				mMap.clear();
+				addItemsToMap(ListViewFragment.itemAdapter.getAllItems());
+			}
+		};
+	}
+	
 	@Override public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		this.activity = activity;
+		localBroadcastManager = LocalBroadcastManager.getInstance(activity);
+	}
+	
+	@Override public void onResume() {
+		super.onResume();
+		localBroadcastManager.registerReceiver(broadcastReceiver, new IntentFilter(WeatherService.INTENT_FILTER));
+	}
+	
+	@Override public void onPause() {
+		localBroadcastManager.unregisterReceiver(broadcastReceiver);
+		super.onPause();
 	}
 	
 	@Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		
 		/* viewHolder allows to cache initialized map view. Once we've inflated
 		 * MapViewFragment it doesn't need to be inflated any more. */
 		if (viewHolder == null) {
@@ -77,13 +105,7 @@ public class MapViewFragment extends Fragment {
 			}
 			
 			/* Filling map with points */
-			if (activity != null && activity.getIntent() != null && activity.getIntent().getExtras() != null) {
-				ArrayList<Item> items = activity.getIntent().getExtras()
-					.getParcelableArrayList(ListViewFragment.STRING_ITEMS);
-				if (items != null) {
-					addItemsToMap(items);
-				}
-			}
+			addItemsToMap(ListViewFragment.itemAdapter.getAllItems());
 		}
 	}
 	

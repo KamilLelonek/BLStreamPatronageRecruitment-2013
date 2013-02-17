@@ -7,16 +7,48 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentManager.OnBackStackChangedListener;
 import android.app.FragmentTransaction;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import fourth.task.android.services.PowerLockReceiver;
+import fourth.task.android.services.ServiceManager;
+import fourth.task.android.services.WeatherService;
+import fourth.task.android.services.WeatherService.WeatherBinder;
 
 public class FourthTaskAndroid extends Activity implements ActionBar.TabListener {
+	public final static String STRING_LOG_TAG = "FourthTaskAndroid";
+	
 	private final Fragment listViewFragment = new ListViewFragment();
 	private final Fragment mapViewFragment = new MapViewFragment();
+	private FragmentManager fragmentManager;
 	
 	private ActionBar actionBar;
-	private FragmentManager fragmentManager;
+	private boolean isServiceBound;
+	public WeatherService weatherService;
+	
+	private final ServiceConnection serviceConnection = new ServiceConnection() {
+		/* After establishing a connection with service all items are passed
+		 * there in case to update their weather data. Here cannot be used
+		 * passing by intent or other way because we need to maintain strong
+		 * reference to this collection. */
+		@Override public void onServiceConnected(ComponentName name, IBinder service) {
+			weatherService = ((WeatherBinder) service).getService();
+			weatherService.setData(ListViewFragment.itemAdapter.getItems());
+			isServiceBound = true;
+			Log.d(STRING_LOG_TAG, "Service bound!");
+		}
+		
+		@Override public void onServiceDisconnected(ComponentName name) {
+			isServiceBound = false;
+			Log.d(STRING_LOG_TAG, "Service unbound!");
+		}
+	};
 	
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -29,6 +61,22 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 		
 		fragmentManager = getFragmentManager();
 		fragmentManager.addOnBackStackChangedListener(new SmartBackStackListener());
+		
+		Log.d(STRING_LOG_TAG, "Calling for service");
+		sendBroadcast(new Intent(ServiceManager.SERVICE_START_INTENT));
+	}
+	
+	@Override protected void onStart() {
+		super.onStart();
+		bindService(new Intent(this, WeatherService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+	}
+	
+	@Override protected void onStop() {
+		super.onStop();
+		if (isServiceBound) {
+			unbindService(serviceConnection);
+			isServiceBound = false;
+		}
 	}
 	
 	@Override public void onTabSelected(Tab tab, FragmentTransaction ft) {
@@ -54,6 +102,7 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 	@Override public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.menu_refresh:
+				sendBroadcast(new Intent(PowerLockReceiver.SERVICE_START_INTENT));
 				return true;
 			case R.id.menu_preferences:
 				fragmentManager.beginTransaction().replace(android.R.id.content, new PreferencesFragment())

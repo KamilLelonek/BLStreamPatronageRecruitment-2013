@@ -5,8 +5,12 @@ import java.util.List;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.ListFragment;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -16,81 +20,93 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnActionExpandListener;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import fourth.task.android.items.Item;
 import fourth.task.android.items.ItemAdapter;
 import fourth.task.android.items.ItemModel;
+import fourth.task.android.services.WeatherService;
 import fourth.task.android.utils.FragmentDialogAddEdit;
 import fourth.task.android.utils.PreferencesManager;
 
 public class ListViewFragment extends ListFragment implements FragmentDialogAddEdit.NoticeDialogListener {
+	private static final long serialVersionUID = 1L;
+	
 	private final String STRING_ADD_ITEM = "add_item";
 	private final String STRING_EDIT_ITEM = "edit_item";
-	private final String STRING_LOG_TAG = "FourthTaskAndroid";
-	private static final long serialVersionUID = 1L;
 	public static final String STRING_CURRENT_ITEM = "current_item";
 	public static final String STRING_ITEMS = "items";
 	public static final String STRING_LISTENER = "listener";
 	
-	private Activity activity;
-	private ListView listView;
-	private List<Item> items;
-	private ItemAdapter itemAdapter;
-	
+	private FourthTaskAndroid activity;
 	private PreferencesManager preferencesManager;
+	private LocalBroadcastManager localBroadcastManager;
+	private BroadcastReceiver broadcastReceiver;
+	
+	public static ItemAdapter itemAdapter;
 	
 	@Override public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		this.activity = activity;
+		this.activity = (FourthTaskAndroid) activity;
 		
 		preferencesManager = new PreferencesManager(activity);
+		localBroadcastManager = LocalBroadcastManager.getInstance(activity);
 	}
 	
 	@Override public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// indicate that fragment provide additional options menu
+		// Indicate that fragment provide additional options menu
 		setHasOptionsMenu(true);
+		
+		/* When BroadcastReceiver receives intent that mean it needs to update
+		 * item adapter data. It has to be done right here because service runs
+		 * in different (not UI) thread, and mustn't have influence on layout. */
+		broadcastReceiver = new BroadcastReceiver() {
+			@Override public void onReceive(Context context, Intent intent) {
+				itemAdapter.notifyDataSetChanged();
+			}
+		};
 	}
 	
 	@Override public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		
-		/* List initialization */
-		listView = getListView();
-		registerForContextMenu(listView);
+		registerForContextMenu(getListView());
 	}
 	
 	/* Serializing items */
 	@Override public void onResume() {
 		super.onResume();
+		readItems();
+		localBroadcastManager.registerReceiver(broadcastReceiver, new IntentFilter(WeatherService.INTENT_FILTER));
+	}
+	
+	private void readItems() {
+		List<Item> items;
 		
 		if (!preferencesManager.isFirstRun()) {
-			Log.d(STRING_LOG_TAG, "Resuming application state.");
+			Log.d(FourthTaskAndroid.STRING_LOG_TAG, "Resuming application state.");
 			
 			items = preferencesManager.deserializeQuotes();
 		}
 		else {
-			Log.d(STRING_LOG_TAG, "First application run!");
+			Log.d(FourthTaskAndroid.STRING_LOG_TAG, "First application run!");
 			
-			items = ItemModel.getItems();
 			preferencesManager.setFirstRunFalse();
+			items = ItemModel.getItems();
 		}
 		
 		itemAdapter = new ItemAdapter(activity, items);
 		setListAdapter(itemAdapter);
-		
-		Intent itemsIntent = new Intent();
-		itemsIntent.putParcelableArrayListExtra(STRING_ITEMS, itemAdapter.getAllItems());
-		itemsIntent.putExtra(ListViewFragment.STRING_LISTENER, this);
-		activity.setIntent(itemsIntent);
+		if (activity.weatherService != null) {
+			activity.weatherService.setData(items);
+		}
 	}
 	
 	/* Deserializing items */
 	@Override public void onPause() {
 		itemAdapter.revertData();
 		preferencesManager.serializeQuotes(itemAdapter.getItems());
+		localBroadcastManager.unregisterReceiver(broadcastReceiver);
 		super.onPause();
 	}
 	
@@ -129,8 +145,7 @@ public class ListViewFragment extends ListFragment implements FragmentDialogAddE
 	 * Helper method which edits selected item by showing dialog with filled
 	 * views from selected item.
 	 * 
-	 * @param itemToEdit
-	 *            item that need to be edited
+	 * @param itemToEdit item that need to be edited
 	 * @return true to handle context menu for selected item in list view
 	 */
 	private boolean editItem(Item itemToEdit) {

@@ -18,14 +18,22 @@ public class Item implements Serializable, Parcelable {
 	private static final long serialVersionUID = 1L;
 	
 	private String name;
+	private String temperature;
+	private String weather;
 	private String color;
 	private double latitude;
 	private double longitude;
 	
 	public Item(String name, double latitude, double longitude, String color) {
+		this(name, latitude, longitude, "", "", color);
+	}
+	
+	public Item(String name, double latitude, double longitude, String temperature, String weather, String color) {
 		this.name = name;
 		this.latitude = latitude;
 		this.longitude = longitude;
+		this.temperature = temperature;
+		this.weather = weather;
 		this.color = color;
 	}
 	
@@ -61,11 +69,28 @@ public class Item implements Serializable, Parcelable {
 		this.color = color;
 	}
 	
+	public String getTemperature() {
+		return this.temperature;
+	}
+	
+	public void setTemperature(String temperature) {
+		this.temperature = temperature;
+	}
+	
+	public String getWeather() {
+		return this.weather;
+	}
+	
+	public void setWeather(String weather) {
+		this.weather = weather;
+	}
+	
 	/* Returns simple marker to draw on map. */
 	public MarkerOptions getMarker() {
 		// TODO add specific icon when needed:
 		// .icon(BitmapDescriptorFactory.fromResource(R.drawable.point));
 		return new MarkerOptions().position(new LatLng(latitude, longitude)).title(name)
+			.snippet(getWeather() + ", " + getTemperature() + " Celcius grads")
 			.icon(BitmapDescriptorFactory.defaultMarker());
 	}
 	
@@ -80,9 +105,9 @@ public class Item implements Serializable, Parcelable {
 		return this.name.equals(((Item) o).name);
 	}
 	
-	/**
-	 * Parcelable section
-	 */
+	/********************************************
+	 ************ Parcelable section ************
+	 ********************************************/
 	@Override public int describeContents() {
 		return 0;
 	}
@@ -99,7 +124,7 @@ public class Item implements Serializable, Parcelable {
 	
 	/* Construtor form ready item read from parcel */
 	private Item(Item item) {
-		this(item.name, item.latitude, item.longitude, item.color);
+		this(item.name, item.latitude, item.longitude, item.temperature, item.weather, item.color);
 	}
 	
 	public static final Parcelable.Creator<Item> CREATOR = new Parcelable.Creator<Item>() {
