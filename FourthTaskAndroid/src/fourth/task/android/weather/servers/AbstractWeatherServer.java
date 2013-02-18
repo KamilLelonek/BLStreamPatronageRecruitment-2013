@@ -51,9 +51,10 @@ public abstract class AbstractWeatherServer implements IWeatherServer {
 	}
 	
 	private class WeatherDataFetcher extends AsyncTask<Item, Void, Void> {
+		private Item item;
 		
 		@Override protected Void doInBackground(Item... params) {
-			Item item = params[0];
+			item = params[0];
 			String itemConnectionString = item.getConnectionString();
 			
 			try {

@@ -16,6 +16,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ProgressBar;
 import fourth.task.android.services.ServiceManager;
 import fourth.task.android.services.WeatherService;
 import fourth.task.android.services.WeatherService.WeatherBinder;
@@ -29,6 +30,7 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 	private final Fragment mapViewFragment = new MapViewFragment();
 	private FragmentManager fragmentManager;
 	private ActionBar actionBar;
+	private ProgressBar progressBar;
 	private boolean isServiceBound;
 	
 	public WeatherService weatherService;
@@ -55,6 +57,9 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 	
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.fourth_task_android);
+		
+		progressBar = (ProgressBar) findViewById(R.id.progressBar);
 		
 		// Specify that we will be displaying tabs in the action bar
 		actionBar = getActionBar();
@@ -102,10 +107,10 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 	@Override public void onTabSelected(Tab tab, FragmentTransaction ft) {
 		switch (tab.getPosition()) {
 			case 0:
-				ft.replace(android.R.id.content, listViewFragment);
+				ft.replace(R.id.fragment_container, listViewFragment);
 				break;
 			case 1:
-				ft.replace(android.R.id.content, mapViewFragment);
+				ft.replace(R.id.fragment_container, mapViewFragment);
 				break;
 		}
 	}

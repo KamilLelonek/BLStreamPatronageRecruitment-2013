@@ -23,12 +23,9 @@ public class OpenWeatherMapParser extends AbstractJSONParser {
 			item.setTemperature(String.valueOf(celciusDegrees));
 			
 			/* Icon */
-			JSONObject jsonObjectWeather = jsonObjectData.getJSONArray("weather").getJSONObject(0);
-			String weatherIconID = jsonObjectWeather.getString("icon");
-			item.setWeatherIconURL("http://openweathermap.org/img/w/" + weatherIconID + ".png");
-			
 			try {
-				URL weatherIconURL = new URL(item.getWeatherIconURL());
+				String weatherIconID = jsonObjectData.getJSONArray("weather").getJSONObject(0).getString("icon");
+				URL weatherIconURL = new URL("http://openweathermap.org/img/w/" + weatherIconID + ".png");
 				Bitmap weatherIcon = BitmapFactory.decodeStream(weatherIconURL.openStream());
 				item.setBitmap(weatherIcon);
 			}

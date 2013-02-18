@@ -11,34 +11,32 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
- * Simple class to represent particular item
+ * Simple class to represent particular item. Implements Serializable for saving
+ * in file and Parcelable for passing between activities.
  */
-/* implementing Serializable for saving in file and Parcelable for passing
- * between activities */
 public class Item implements Serializable, Parcelable {
 	private static final long serialVersionUID = 1L;
 	
 	private String name;
-	private String temperature;
 	private String color;
+	private String temperature;
 	private double latitude;
 	private double longitude;
 	
 	private String connectionString;
-	private String weatherIconURL;
 	private byte[] bitmapArray;
 	
 	public Item(String name, double latitude, double longitude, String color) {
-		this(name, latitude, longitude, "", "", color);
+		this(name, latitude, longitude, "", color, null);
 	}
 	
-	public Item(String name, double latitude, double longitude, String temperature, String weatherIconURL, String color) {
+	public Item(String name, double latitude, double longitude, String temperature, String color, byte[] bitmapArray) {
 		this.name = name;
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.temperature = temperature;
-		this.weatherIconURL = weatherIconURL;
 		this.color = color;
+		this.bitmapArray = bitmapArray;
 	}
 	
 	public String getName() {
@@ -89,14 +87,6 @@ public class Item implements Serializable, Parcelable {
 		this.connectionString = connectionString;
 	}
 	
-	public String getWeatherIconURL() {
-		return weatherIconURL;
-	}
-	
-	public void setWeatherIconURL(String weatherIconURL) {
-		this.weatherIconURL = weatherIconURL;
-	}
-	
 	public Bitmap getBitmap() {
 		return BitmapSerializator.deserializeBitmap(bitmapArray);
 	}
@@ -124,6 +114,10 @@ public class Item implements Serializable, Parcelable {
 		return this.name.equals(((Item) o).name);
 	}
 	
+	@Override public int hashCode() {
+		return this.name.hashCode();
+	}
+	
 	/********************************************
 	 ************ Parcelable section ************
 	 ********************************************/
@@ -143,7 +137,7 @@ public class Item implements Serializable, Parcelable {
 	
 	/* Construtor form ready item read from parcel */
 	private Item(Item item) {
-		this(item.name, item.latitude, item.longitude, item.temperature, item.weatherIconURL, item.color);
+		this(item.name, item.latitude, item.longitude, item.temperature, item.color, item.bitmapArray);
 	}
 	
 	public static final Parcelable.Creator<Item> CREATOR = new Parcelable.Creator<Item>() {

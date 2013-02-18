@@ -23,6 +23,7 @@ public class WeatherService extends IntentService implements OnSharedPreferenceC
 	private IWeatherServer weatherServer;
 	private List<Item> items;
 	private LocalBroadcastManager localBroadcastManager;
+	
 	public static final String INTENT_FILTER = "update-list";
 	
 	public WeatherService() {
@@ -65,10 +66,9 @@ public class WeatherService extends IntentService implements OnSharedPreferenceC
 		String[] availableServers = getResources().getStringArray(R.array.preferences_weather_servers_list);
 		String serverName = sharedPreferences.getString(PreferencesFragment.PREFERENCE_SERVERS, availableServers[0]);
 		
-		if (serverName.equals(availableServers[0])) return new OpenWeatherMap(getApplicationContext());
-		else if (serverName.equals(availableServers[1])) return new ForecaServer();
+		if (serverName.equals(availableServers[1])) return new ForecaServer();
 		else if (serverName.equals(availableServers[2])) return new AccuWeatherServer();
-		return null;
+		return new OpenWeatherMap(getApplicationContext());
 	}
 	
 	/***************************************************
