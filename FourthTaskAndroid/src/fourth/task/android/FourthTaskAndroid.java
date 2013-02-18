@@ -16,10 +16,11 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import fourth.task.android.services.PowerLockReceiver;
 import fourth.task.android.services.ServiceManager;
 import fourth.task.android.services.WeatherService;
 import fourth.task.android.services.WeatherService.WeatherBinder;
+import fourth.task.android.utils.ApplicationObject;
+import fourth.task.android.utils.FragmentDialogInternetConnection;
 
 public class FourthTaskAndroid extends Activity implements ActionBar.TabListener {
 	public final static String STRING_LOG_TAG = "FourthTaskAndroid";
@@ -27,9 +28,9 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 	private final Fragment listViewFragment = new ListViewFragment();
 	private final Fragment mapViewFragment = new MapViewFragment();
 	private FragmentManager fragmentManager;
-	
 	private ActionBar actionBar;
 	private boolean isServiceBound;
+	
 	public WeatherService weatherService;
 	
 	private final ServiceConnection serviceConnection = new ServiceConnection() {
@@ -42,6 +43,8 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 			weatherService.setData(ListViewFragment.itemAdapter.getItems());
 			isServiceBound = true;
 			Log.d(STRING_LOG_TAG, "Service bound!");
+			
+			callForServiceManager();
 		}
 		
 		@Override public void onServiceDisconnected(ComponentName name) {
@@ -61,14 +64,31 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 		
 		fragmentManager = getFragmentManager();
 		fragmentManager.addOnBackStackChangedListener(new SmartBackStackListener());
-		
-		Log.d(STRING_LOG_TAG, "Calling for service");
-		sendBroadcast(new Intent(ServiceManager.SERVICE_START_INTENT));
 	}
 	
 	@Override protected void onStart() {
 		super.onStart();
-		bindService(new Intent(this, WeatherService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+		if (!isServiceBound) {
+			bindService(new Intent(this, WeatherService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+		}
+		else {
+			callForServiceManager();
+		}
+	}
+	
+	private void callForServiceManager() {
+		if (isNetworkOnline()) {
+			Log.d(STRING_LOG_TAG, "Calling for ServiceManager");
+			startService(new Intent(FourthTaskAndroid.this, ServiceManager.class));
+		}
+	}
+	
+	public boolean isNetworkOnline() {
+		ApplicationObject applicationObject = (ApplicationObject) getApplication();
+		if (applicationObject.isConnectedToInternet()) return true;
+		
+		new FragmentDialogInternetConnection().show(getFragmentManager(), "");
+		return false;
 	}
 	
 	@Override protected void onStop() {
@@ -102,7 +122,9 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 	@Override public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.menu_refresh:
-				sendBroadcast(new Intent(PowerLockReceiver.SERVICE_START_INTENT));
+				if (isNetworkOnline()) {
+					startService(new Intent(FourthTaskAndroid.this, ServiceManager.class));
+				}
 				return true;
 			case R.id.menu_preferences:
 				fragmentManager.beginTransaction().replace(android.R.id.content, new PreferencesFragment())

@@ -31,7 +31,7 @@ import fourth.task.android.services.WeatherService;
 
 public class MapViewFragment extends Fragment {
 	private final int ONE_SEC_IN_MILISEC = 1000;
-	private final String STRING_LOG_TAG = "RadarFragment";
+	private final String STRING_LOG_TAG = "MapViewFragment";
 	
 	private Activity activity;
 	private GoogleMap mMap;

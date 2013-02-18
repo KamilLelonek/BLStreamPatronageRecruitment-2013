@@ -2,7 +2,7 @@
 <resources>
 
     <string-array name="preferences_weather_servers_list">
-        <item>Yahoo</item>
+        <item>OpenWeatherMap</item>
         <item>Foreca</item>
         <item>AccuWeather</item>
     </string-array>

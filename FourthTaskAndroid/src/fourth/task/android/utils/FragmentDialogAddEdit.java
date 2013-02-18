@@ -18,8 +18,14 @@ import fourth.task.android.ListViewFragment;
 import fourth.task.android.R;
 import fourth.task.android.items.Item;
 
+/**
+ * FragmentDialog representing add/edit item view.
+ */
 public class FragmentDialogAddEdit extends DialogFragment {
 	private final String REGEX_FOR_SIGNED_DOUBLE_NUMBERS = "-?\\d+(.\\d+)?";
+	private final int LIST_VIEW_FRAGMENT_ID = 0x1020002;
+	
+	private boolean isViewInitialized;
 	
 	private Activity activity;
 	private AlertDialog alertDialog;
@@ -47,47 +53,34 @@ public class FragmentDialogAddEdit extends DialogFragment {
 	@Override public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		this.activity = activity;
-		
-		if (activity != null && activity.getIntent() != null && activity.getIntent().getExtras() != null) {
-			// listener is also available from:
-			// (ListViewFragment) getFragmentManager().findFragmentByTag( "android:switcher:2130968580:0");
-			this.mListener = (NoticeDialogListener) activity.getIntent().getSerializableExtra(
-				ListViewFragment.STRING_LISTENER);
-		}
+		this.mListener = (ListViewFragment) getFragmentManager().findFragmentById(LIST_VIEW_FRAGMENT_ID);
 	}
 	
 	@Override public Dialog onCreateDialog(Bundle savedInstanceState) {
 		// Initialize particular views if not initialized yet
-		if (dialogView == null) {
+		if (!isViewInitialized) {
 			dialogView = activity.getLayoutInflater().inflate(R.layout.fragment_add_dialog, null);
-		}
-		if (nameEditText == null) {
 			nameEditText = (EditText) dialogView.findViewById(R.id.EditTextItemName);
-		}
-		if (latitudeEditText == null) {
 			latitudeEditText = (EditText) dialogView.findViewById(R.id.EditTextItemLatitude);
-		}
-		if (longitudeEditText == null) {
 			longitudeEditText = (EditText) dialogView.findViewById(R.id.EditTextItemLongitude);
-		}
-		if (okButton == null) {
+			
 			okButton = (Button) dialogView.findViewById(R.id.buttonOkAlertDialog);
 			okButton.setOnClickListener(new OnClickListener() {
 				@Override public void onClick(View v) {
 					onOkButtonClick();
 				}
 			});
-		}
-		if (cancelButton == null) {
+			
 			cancelButton = (Button) dialogView.findViewById(R.id.buttonCancelAlertDialog);
 			cancelButton.setOnClickListener(new OnClickListener() {
 				@Override public void onClick(View v) {
 					onCancelButtonClick();
 				}
 			});
-		}
-		if (spinnerItemColor == null) {
+			
 			spinnerItemColor = (Spinner) dialogView.findViewById(R.id.SpinnerItemColor);
+			
+			isViewInitialized = true;
 		}
 		
 		currentItem = getCurrentItem();

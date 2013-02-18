@@ -14,10 +14,10 @@ import android.util.Log;
 import fourth.task.android.PreferencesFragment;
 import fourth.task.android.R;
 import fourth.task.android.items.Item;
-import fourth.task.android.network.AccuWeatherServer;
-import fourth.task.android.network.ForecaServer;
-import fourth.task.android.network.IWeatherServer;
-import fourth.task.android.network.YahooServer;
+import fourth.task.android.weather.servers.AccuWeatherServer;
+import fourth.task.android.weather.servers.ForecaServer;
+import fourth.task.android.weather.servers.IWeatherServer;
+import fourth.task.android.weather.servers.OpenWeatherMap;
 
 public class WeatherService extends IntentService implements OnSharedPreferenceChangeListener {
 	private IWeatherServer weatherServer;
@@ -44,19 +44,19 @@ public class WeatherService extends IntentService implements OnSharedPreferenceC
 		Log.d(ServiceManager.SERVICE_LOG_TAG, "WeatherService: Starting to update data.");
 		try {
 			if (items != null && !items.isEmpty()) {
+				PowerLockManager.acquireLock(getApplicationContext());
 				weatherServer.downloadData(items);
 			}
 		}
 		finally {
+			PowerLockManager.relaseLock();
 			Log.d(ServiceManager.SERVICE_LOG_TAG, "WeatherService: Data succesfuly updated!");
 			localBroadcastManager.sendBroadcast(new Intent(INTENT_FILTER));
-			PowerLockReceiver.relaseLock();
 		}
 	}
 	
 	@Override public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		if (key.equals(PreferencesFragment.PREFERENCE_SERVERS)) {
-			weatherServer.cancelDownload();
 			weatherServer = getWeatherServer(sharedPreferences);
 		}
 	}
@@ -65,7 +65,7 @@ public class WeatherService extends IntentService implements OnSharedPreferenceC
 		String[] availableServers = getResources().getStringArray(R.array.preferences_weather_servers_list);
 		String serverName = sharedPreferences.getString(PreferencesFragment.PREFERENCE_SERVERS, availableServers[0]);
 		
-		if (serverName.equals(availableServers[0])) return new YahooServer();
+		if (serverName.equals(availableServers[0])) return new OpenWeatherMap(getApplicationContext());
 		else if (serverName.equals(availableServers[1])) return new ForecaServer();
 		else if (serverName.equals(availableServers[2])) return new AccuWeatherServer();
 		return null;
@@ -90,6 +90,5 @@ public class WeatherService extends IntentService implements OnSharedPreferenceC
 	/* methods for clients */
 	public void setData(List<Item> items) {
 		this.items = items;
-		updateWeatherData();
 	}
 }

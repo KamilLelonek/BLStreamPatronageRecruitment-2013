@@ -2,6 +2,7 @@ package fourth.task.android.items;
 
 import java.io.Serializable;
 
+import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -19,21 +20,24 @@ public class Item implements Serializable, Parcelable {
 	
 	private String name;
 	private String temperature;
-	private String weather;
 	private String color;
 	private double latitude;
 	private double longitude;
+	
+	private String connectionString;
+	private String weatherIconURL;
+	private byte[] bitmapArray;
 	
 	public Item(String name, double latitude, double longitude, String color) {
 		this(name, latitude, longitude, "", "", color);
 	}
 	
-	public Item(String name, double latitude, double longitude, String temperature, String weather, String color) {
+	public Item(String name, double latitude, double longitude, String temperature, String weatherIconURL, String color) {
 		this.name = name;
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.temperature = temperature;
-		this.weather = weather;
+		this.weatherIconURL = weatherIconURL;
 		this.color = color;
 	}
 	
@@ -77,12 +81,28 @@ public class Item implements Serializable, Parcelable {
 		this.temperature = temperature;
 	}
 	
-	public String getWeather() {
-		return this.weather;
+	public String getConnectionString() {
+		return connectionString;
 	}
 	
-	public void setWeather(String weather) {
-		this.weather = weather;
+	public void setConnectionString(String connectionString) {
+		this.connectionString = connectionString;
+	}
+	
+	public String getWeatherIconURL() {
+		return weatherIconURL;
+	}
+	
+	public void setWeatherIconURL(String weatherIconURL) {
+		this.weatherIconURL = weatherIconURL;
+	}
+	
+	public Bitmap getBitmap() {
+		return BitmapSerializator.deserializeBitmap(bitmapArray);
+	}
+	
+	public void setBitmap(Bitmap bitmap) {
+		this.bitmapArray = BitmapSerializator.serializeBitmap(bitmap);
 	}
 	
 	/* Returns simple marker to draw on map. */
@@ -90,8 +110,7 @@ public class Item implements Serializable, Parcelable {
 		// TODO add specific icon when needed:
 		// .icon(BitmapDescriptorFactory.fromResource(R.drawable.point));
 		return new MarkerOptions().position(new LatLng(latitude, longitude)).title(name)
-			.snippet(getWeather() + ", " + getTemperature() + " Celcius grads")
-			.icon(BitmapDescriptorFactory.defaultMarker());
+			.snippet(getTemperature() + " Celcius grads").icon(BitmapDescriptorFactory.defaultMarker());
 	}
 	
 	/* toString and equals added to make renaming, deleting and adding operation
@@ -124,7 +143,7 @@ public class Item implements Serializable, Parcelable {
 	
 	/* Construtor form ready item read from parcel */
 	private Item(Item item) {
-		this(item.name, item.latitude, item.longitude, item.temperature, item.weather, item.color);
+		this(item.name, item.latitude, item.longitude, item.temperature, item.weatherIconURL, item.color);
 	}
 	
 	public static final Parcelable.Creator<Item> CREATOR = new Parcelable.Creator<Item>() {

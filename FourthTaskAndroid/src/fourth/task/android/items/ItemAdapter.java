@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
 import fourth.task.android.R;
 
@@ -100,20 +101,24 @@ public class ItemAdapter extends BaseAdapter implements Filterable {
 			viewHolder = new ViewHolder();
 			
 			viewHolder.textViewName = (TextView) listItem.findViewById(R.id.textViewName);
-			viewHolder.textViewWeather = (TextView) listItem.findViewById(R.id.textViewWeather);
 			viewHolder.textViewTemperature = (TextView) listItem.findViewById(R.id.textViewTemperature);
+			viewHolder.imageViewWeather = (ImageView) listItem.findViewById(R.id.imageViewWeather);
 			
 			listItem.setTag(viewHolder);
+			viewHolder.imageViewWeather.setTag(position);
 		}
 		
-		// keeping textView in item tag allows to avoid invoking findViewById
-		// every time when it is needed to make rendering faster
+		// Keeping views in item tag allows to avoid invoking findViewById
+		// every time. It makes rendering faster.
 		Item currentItem = getItem(position);
 		viewHolder.textViewName.setText(currentItem.getName());
-		viewHolder.textViewWeather.setText(currentItem.getWeather());
 		viewHolder.textViewTemperature.setText(currentItem.getTemperature());
 		
-		// It works but doesn't look nice 
+		if (currentItem.getBitmap() != null) {
+			viewHolder.imageViewWeather.setImageBitmap(currentItem.getBitmap());
+		}
+		
+		// It works but doesn't look nice
 		// TODO Maybe implement (uncomment) it later
 		// listItem.setBackgroundColor(Color.parseColor(currentItem.getColor()));
 		
@@ -122,8 +127,8 @@ public class ItemAdapter extends BaseAdapter implements Filterable {
 	
 	private class ViewHolder {
 		TextView textViewName;
-		TextView textViewWeather;
 		TextView textViewTemperature;
+		ImageView imageViewWeather;
 	}
 	
 	/**

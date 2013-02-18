@@ -6,28 +6,30 @@
     android:padding="5dp"
     tools:ignore="HardcodedText" >
 
+    <ImageView
+        android:id="@+id/imageViewWeather"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="10dp"
+        android:contentDescription="@+id/imageViewWeather"
+        android:src="@drawable/no_weather" />
+
     <TextView
         android:id="@+id/textViewName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/imageViewWeather"
         android:text="Medium Text"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <TextView
-        android:id="@+id/textViewWeather"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/textViewName"
-        android:text="TextView" />
 
     <TextView
         android:id="@+id/textViewTemperature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/textViewWeather"
-        android:layout_alignParentRight="true"
+        android:layout_below="@+id/textViewName"
+        android:layout_toRightOf="@+id/imageViewWeather"
         android:text="TextView" />
 
 </RelativeLayout>

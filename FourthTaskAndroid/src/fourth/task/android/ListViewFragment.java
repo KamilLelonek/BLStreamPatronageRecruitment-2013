@@ -32,11 +32,7 @@ import fourth.task.android.utils.PreferencesManager;
 public class ListViewFragment extends ListFragment implements FragmentDialogAddEdit.NoticeDialogListener {
 	private static final long serialVersionUID = 1L;
 	
-	private final String STRING_ADD_ITEM = "add_item";
-	private final String STRING_EDIT_ITEM = "edit_item";
 	public static final String STRING_CURRENT_ITEM = "current_item";
-	public static final String STRING_ITEMS = "items";
-	public static final String STRING_LISTENER = "listener";
 	
 	private FourthTaskAndroid activity;
 	private PreferencesManager preferencesManager;
@@ -154,7 +150,7 @@ public class ListViewFragment extends ListFragment implements FragmentDialogAddE
 		
 		DialogFragment newFragment = new FragmentDialogAddEdit();
 		newFragment.setArguments(itemBundle);
-		newFragment.show(getFragmentManager(), STRING_EDIT_ITEM);
+		newFragment.show(getFragmentManager(), "edit_item");
 		
 		return true;
 	}
@@ -202,8 +198,7 @@ public class ListViewFragment extends ListFragment implements FragmentDialogAddE
 	@Override public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.menu_add:
-				DialogFragment newFragment = new FragmentDialogAddEdit();
-				newFragment.show(getFragmentManager(), STRING_ADD_ITEM);
+				new FragmentDialogAddEdit().show(getFragmentManager(), "add_item");
 		}
 		return super.onOptionsItemSelected(item);
 	}

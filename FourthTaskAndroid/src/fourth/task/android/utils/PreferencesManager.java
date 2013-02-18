@@ -9,17 +9,17 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import fourth.task.android.R;
-import fourth.task.android.items.Item;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
+import fourth.task.android.R;
+import fourth.task.android.items.Item;
 
 /**
  * This class allows to manage application shared preferences and also managing
- * file system by list serialization
+ * file system by list serialization.
  */
 public class PreferencesManager {
 	private final String STRING_CITIES = "cities";
@@ -88,8 +88,7 @@ public class PreferencesManager {
 	/**
 	 * Serializes list of items
 	 * 
-	 * @param list
-	 *            list of items to serialize
+	 * @param list list of items to serialize
 	 */
 	public void serializeQuotes(List<Item> list) {
 		Log.d(STRING_LOG_TAG, "Saving items to file.");
