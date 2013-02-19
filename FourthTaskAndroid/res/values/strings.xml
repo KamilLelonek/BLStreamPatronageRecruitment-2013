@@ -29,6 +29,7 @@
     <string name="alert_reading_error">Can\'t read list from internal storage.</string>
     <string name="alert_internet_connection_title">Internet connection not available!</string>
     <string name="alert_internet_connection_body">Please enable Mobile data or Wi-Fi.</string>
+    <string name="alert_progress_dialog_message">Updating weather data&#8230;</string>
     <!-- Preferences -->
     <string name="preferences_autorefresh_checkbox_title">Auto refresh weather</string>
     <string name="preferences_autorefresh_checkbox_summary">Weather\'s data will be automatically refresher in specified time cycles.</string>

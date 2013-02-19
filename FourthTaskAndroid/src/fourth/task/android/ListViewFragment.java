@@ -39,6 +39,7 @@ public class ListViewFragment extends ListFragment implements FragmentDialogAddE
 	private LocalBroadcastManager localBroadcastManager;
 	private BroadcastReceiver broadcastReceiver;
 	
+	// Should be accessible by reference here, in mapView and in activity.
 	public static ItemAdapter itemAdapter;
 	
 	@Override public void onAttach(Activity activity) {
@@ -69,9 +70,9 @@ public class ListViewFragment extends ListFragment implements FragmentDialogAddE
 		registerForContextMenu(getListView());
 	}
 	
-	/* Serializing items */
-	@Override public void onResume() {
-		super.onResume();
+	/* Deserializing items */
+	@Override public void onStart() {
+		super.onStart();
 		readItems();
 		localBroadcastManager.registerReceiver(broadcastReceiver, new IntentFilter(WeatherService.INTENT_FILTER));
 	}
@@ -93,17 +94,15 @@ public class ListViewFragment extends ListFragment implements FragmentDialogAddE
 		
 		itemAdapter = new ItemAdapter(activity, items);
 		setListAdapter(itemAdapter);
-		if (activity.weatherService != null) {
-			activity.weatherService.setData(items);
-		}
+		activity.setWeatherServiceData(items);
 	}
 	
-	/* Deserializing items */
-	@Override public void onPause() {
+	/* Serializing items */
+	@Override public void onStop() {
 		itemAdapter.revertData();
 		preferencesManager.serializeQuotes(itemAdapter.getItems());
 		localBroadcastManager.unregisterReceiver(broadcastReceiver);
-		super.onPause();
+		super.onStop();
 	}
 	
 	@Override public void onDialogPositiveClick(Item newItem, Item oldItem) {

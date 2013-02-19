@@ -31,7 +31,9 @@ public class WeatherService extends IntentService implements OnSharedPreferenceC
 	
 	@Override public void onCreate() {
 		super.onCreate();
-		weatherServer = getWeatherServer(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()));
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+		weatherServer = getWeatherServer(sharedPreferences);
 		localBroadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
 	}
 	
@@ -43,10 +45,9 @@ public class WeatherService extends IntentService implements OnSharedPreferenceC
 	private void updateWeatherData() {
 		Log.d(ServiceManager.SERVICE_LOG_TAG, "WeatherService: Starting to update data.");
 		try {
-			if (items != null && !items.isEmpty()) {
-				if (PowerLockManager.acquireLock(getApplicationContext())) {
-					weatherServer.downloadData(items);
-				}
+			// PowerLockManager prevents from multi-download data.
+			if (items != null && !items.isEmpty() && PowerLockManager.acquireLock(getApplicationContext())) {
+				weatherServer.downloadData(items);
 			}
 		}
 		finally {
@@ -57,6 +58,8 @@ public class WeatherService extends IntentService implements OnSharedPreferenceC
 	}
 	
 	@Override public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		Log.d(ServiceManager.SERVICE_LOG_TAG, "WeatherService: onSharedPreferenceChanged");
+		
 		if (key.equals(PreferencesFragment.PREFERENCE_SERVERS)) {
 			weatherServer = getWeatherServer(sharedPreferences);
 		}

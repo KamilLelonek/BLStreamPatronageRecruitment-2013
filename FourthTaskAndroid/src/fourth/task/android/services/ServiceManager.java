@@ -91,6 +91,8 @@ public class ServiceManager extends IntentService implements OnSharedPreferenceC
 	}
 	
 	@Override public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		Log.d(SERVICE_LOG_TAG, "ServiceManager: onSharedPreferenceChanged");
+		
 		if (PreferencesFragment.PREFERENCE_CYCLE_TIME.equals(key)
 			|| PreferencesFragment.PREFERENCE_AUTO_REFRESH_CONDITION.equals(key)) {
 			/* Refreshing cycle time has been changed or cycling refreshing has
