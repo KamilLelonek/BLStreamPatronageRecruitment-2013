@@ -31,5 +31,5 @@ public abstract class AbstractJSONParser implements IWeatherParser {
 		updateWeatherData(item, stringBuilder.toString());
 	}
 	
-	protected abstract void updateWeatherData(Item item, String data);
+	public abstract void updateWeatherData(Item item, String data);
 }

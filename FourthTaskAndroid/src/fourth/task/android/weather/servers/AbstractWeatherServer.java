@@ -34,6 +34,7 @@ public abstract class AbstractWeatherServer implements IWeatherServer {
 	
 	@Override public void downloadData(List<Item> items) {
 		for (Item item : items) {
+			item.setConnectionString(String.format(connectionString, item.getLatitude(), item.getLongitude()));
 			asyncTasksQueue.add(new WeatherDataFetcher().execute(item));
 		}
 		

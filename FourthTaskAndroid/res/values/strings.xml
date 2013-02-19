@@ -14,6 +14,7 @@
     <string name="label_manageItem">Manage item</string>
     <string name="label_list">List</string>
     <string name="label_map">Map</string>
+    <string name="label_degree_Celsius">degree Celsius</string>
     <!-- Menus -->
     <string name="menu_edit">Edit</string>
     <string name="menu_delete">Delete</string>

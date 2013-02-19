@@ -50,10 +50,6 @@ public class ServiceManager extends IntentService implements OnSharedPreferenceC
 		startWeatherUpdateRequest();
 	}
 	
-	private boolean isAutoRefreshEnabled() {
-		return sharedPreferences.getBoolean(PreferencesFragment.PREFERENCE_AUTO_REFRESH_CONDITION, false);
-	}
-	
 	private void startWeatherUpdateRequest() {
 		if (isAutoRefreshEnabled()) {
 			Log.d(SERVICE_LOG_TAG, "ServiceManager: Starting new refreshing cycle (first app start or on demand).");
@@ -63,6 +59,10 @@ public class ServiceManager extends IntentService implements OnSharedPreferenceC
 			Log.d(SERVICE_LOG_TAG, "ServiceManager: One-shot update request.");
 			startService(new Intent(context, WeatherService.class));
 		}
+	}
+	
+	private boolean isAutoRefreshEnabled() {
+		return sharedPreferences.getBoolean(PreferencesFragment.PREFERENCE_AUTO_REFRESH_CONDITION, false);
 	}
 	
 	private int getAutoRefreshTimeCycle() {
@@ -93,12 +93,10 @@ public class ServiceManager extends IntentService implements OnSharedPreferenceC
 	@Override public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		if (PreferencesFragment.PREFERENCE_CYCLE_TIME.equals(key)
 			|| PreferencesFragment.PREFERENCE_AUTO_REFRESH_CONDITION.equals(key)) {
-			if (isAutoRefreshEnabled()) {
-				/* Refreshing cycle time has been changed and cycling refreshing
-				 * is still enabled so weather update request must be restarted
-				 * to change its data update period. */
-				restartWeatherUpdateRequest();
-			}
+			/* Refreshing cycle time has been changed or cycling refreshing has
+			 * been changer so weather update request must be restarted to
+			 * change its data update period or been turned on/off. */
+			restartWeatherUpdateRequest();
 		}
 	}
 	

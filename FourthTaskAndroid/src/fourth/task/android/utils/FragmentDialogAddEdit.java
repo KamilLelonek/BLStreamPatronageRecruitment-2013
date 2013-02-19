@@ -23,7 +23,6 @@ import fourth.task.android.items.Item;
  */
 public class FragmentDialogAddEdit extends DialogFragment {
 	private final String REGEX_FOR_SIGNED_DOUBLE_NUMBERS = "-?\\d+(.\\d+)?";
-	private final int LIST_VIEW_FRAGMENT_ID = 0x1020002;
 	
 	private boolean isViewInitialized;
 	
@@ -53,7 +52,7 @@ public class FragmentDialogAddEdit extends DialogFragment {
 	@Override public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		this.activity = activity;
-		this.mListener = (ListViewFragment) getFragmentManager().findFragmentById(LIST_VIEW_FRAGMENT_ID);
+		this.mListener = (ListViewFragment) getFragmentManager().findFragmentById(R.id.fragment_container);
 	}
 	
 	@Override public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -119,8 +118,8 @@ public class FragmentDialogAddEdit extends DialogFragment {
 			if (mListener != null) {
 				mListener.onDialogPositiveClick(
 					new Item(nameEditText.getText().toString(), Double.valueOf(latitudeEditText.getText().toString()),
-						Double.valueOf(longitudeEditText.getText().toString()), spinnerItemColor.getSelectedItem()
-							.toString()), currentItem);
+						Double.valueOf(longitudeEditText.getText().toString()), currentItem.getTemperature(),
+						spinnerItemColor.getSelectedItem().toString(), currentItem.getBitmapArray()), currentItem);
 			}
 			onCancelButtonClick();
 		}

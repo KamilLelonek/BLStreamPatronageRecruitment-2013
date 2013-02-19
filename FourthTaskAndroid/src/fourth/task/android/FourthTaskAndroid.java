@@ -7,34 +7,40 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentManager.OnBackStackChangedListener;
 import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ProgressBar;
 import fourth.task.android.services.ServiceManager;
 import fourth.task.android.services.WeatherService;
 import fourth.task.android.services.WeatherService.WeatherBinder;
 import fourth.task.android.utils.ApplicationObject;
 import fourth.task.android.utils.FragmentDialogInternetConnection;
+import fourth.task.android.utils.FragmentLoading;
 
 public class FourthTaskAndroid extends Activity implements ActionBar.TabListener {
 	public final static String STRING_LOG_TAG = "FourthTaskAndroid";
 	
+	private FragmentManager fragmentManager;
 	private final Fragment listViewFragment = new ListViewFragment();
 	private final Fragment mapViewFragment = new MapViewFragment();
-	private FragmentManager fragmentManager;
+	private final Fragment loadingFragment = new FragmentLoading();
+	private Fragment lastFragment = listViewFragment;
+	
 	private ActionBar actionBar;
-	private ProgressBar progressBar;
 	private boolean isServiceBound;
+	private LocalBroadcastManager localBroadcastManager;
+	private BroadcastReceiver broadcastReceiver;
 	
 	public WeatherService weatherService;
-	
 	private final ServiceConnection serviceConnection = new ServiceConnection() {
 		/* After establishing a connection with service all items are passed
 		 * there in case to update their weather data. Here cannot be used
@@ -59,16 +65,24 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.fourth_task_android);
 		
-		progressBar = (ProgressBar) findViewById(R.id.progressBar);
+		fragmentManager = getFragmentManager();
+		fragmentManager.addOnBackStackChangedListener(new SmartBackStackListener());
+		
+		localBroadcastManager = LocalBroadcastManager.getInstance(FourthTaskAndroid.this);
+		broadcastReceiver = new BroadcastReceiver() {
+			@Override public void onReceive(Context context, Intent intent) {
+				if (!actionBar.isShowing()) {
+					fragmentManager.beginTransaction().replace(R.id.fragment_container, lastFragment).commit();
+					actionBar.show();
+				}
+			}
+		};
 		
 		// Specify that we will be displaying tabs in the action bar
 		actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		actionBar.addTab(actionBar.newTab().setText(getString(R.string.label_list)).setTabListener(this));
 		actionBar.addTab(actionBar.newTab().setText(getString(R.string.label_map)).setTabListener(this));
-		
-		fragmentManager = getFragmentManager();
-		fragmentManager.addOnBackStackChangedListener(new SmartBackStackListener());
 	}
 	
 	@Override protected void onStart() {
@@ -79,6 +93,7 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 		else {
 			callForServiceManager();
 		}
+		localBroadcastManager.registerReceiver(broadcastReceiver, new IntentFilter(WeatherService.INTENT_FILTER));
 	}
 	
 	private void callForServiceManager() {
@@ -102,15 +117,18 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 			unbindService(serviceConnection);
 			isServiceBound = false;
 		}
+		localBroadcastManager.unregisterReceiver(broadcastReceiver);
 	}
 	
 	@Override public void onTabSelected(Tab tab, FragmentTransaction ft) {
 		switch (tab.getPosition()) {
 			case 0:
 				ft.replace(R.id.fragment_container, listViewFragment);
+				lastFragment = listViewFragment;
 				break;
 			case 1:
 				ft.replace(R.id.fragment_container, mapViewFragment);
+				lastFragment = mapViewFragment;
 				break;
 		}
 	}
@@ -129,10 +147,12 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 			case R.id.menu_refresh:
 				if (isNetworkOnline()) {
 					startService(new Intent(FourthTaskAndroid.this, ServiceManager.class));
+					fragmentManager.beginTransaction().replace(R.id.fragment_container, loadingFragment).commit();
+					actionBar.hide();
 				}
 				return true;
 			case R.id.menu_preferences:
-				fragmentManager.beginTransaction().replace(android.R.id.content, new PreferencesFragment())
+				fragmentManager.beginTransaction().replace(R.id.fragment_container, new PreferencesFragment())
 					.addToBackStack(null).commit();
 				actionBar.hide();
 				return true;

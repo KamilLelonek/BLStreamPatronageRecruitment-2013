@@ -1,18 +1,17 @@
 package fourth.task.android.weather.parsers;
 
 import java.io.IOException;
-import java.net.URL;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import fourth.task.android.items.Item;
+import fourth.task.android.utils.BitmapManager;
 
 public class OpenWeatherMapParser extends AbstractJSONParser {
 	
-	@Override protected void updateWeatherData(Item item, String data) {
+	@Override public void updateWeatherData(Item item, String data) {
 		try {
 			JSONObject jsonObjectWrapper = new JSONObject(data);
 			JSONObject jsonObjectData = jsonObjectWrapper.getJSONArray("list").getJSONObject(0);
@@ -25,8 +24,8 @@ public class OpenWeatherMapParser extends AbstractJSONParser {
 			/* Icon */
 			try {
 				String weatherIconID = jsonObjectData.getJSONArray("weather").getJSONObject(0).getString("icon");
-				URL weatherIconURL = new URL("http://openweathermap.org/img/w/" + weatherIconID + ".png");
-				Bitmap weatherIcon = BitmapFactory.decodeStream(weatherIconURL.openStream());
+				Bitmap weatherIcon = BitmapManager.downloadBitmap("http://openweathermap.org/img/w/" + weatherIconID
+					+ ".png");
 				item.setBitmap(weatherIcon);
 			}
 			catch (IOException e) {}

@@ -14,10 +14,9 @@ import android.util.Log;
 import fourth.task.android.PreferencesFragment;
 import fourth.task.android.R;
 import fourth.task.android.items.Item;
-import fourth.task.android.weather.servers.AccuWeatherServer;
-import fourth.task.android.weather.servers.ForecaServer;
 import fourth.task.android.weather.servers.IWeatherServer;
-import fourth.task.android.weather.servers.OpenWeatherMap;
+import fourth.task.android.weather.servers.OpenWeatherMapServer;
+import fourth.task.android.weather.servers.WorldWeatherOnlineServer;
 
 public class WeatherService extends IntentService implements OnSharedPreferenceChangeListener {
 	private IWeatherServer weatherServer;
@@ -66,9 +65,8 @@ public class WeatherService extends IntentService implements OnSharedPreferenceC
 		String[] availableServers = getResources().getStringArray(R.array.preferences_weather_servers_list);
 		String serverName = sharedPreferences.getString(PreferencesFragment.PREFERENCE_SERVERS, availableServers[0]);
 		
-		if (serverName.equals(availableServers[1])) return new ForecaServer();
-		else if (serverName.equals(availableServers[2])) return new AccuWeatherServer();
-		return new OpenWeatherMap(getApplicationContext());
+		if (serverName.equals(availableServers[1])) return new WorldWeatherOnlineServer(getApplicationContext());
+		return new OpenWeatherMapServer(getApplicationContext());
 	}
 	
 	/***************************************************

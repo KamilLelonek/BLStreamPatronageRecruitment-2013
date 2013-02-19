@@ -3,8 +3,7 @@
 
     <string-array name="preferences_weather_servers_list">
         <item>OpenWeatherMap</item>
-        <item>Foreca</item>
-        <item>AccuWeather</item>
+        <item>WorldWeatherOnline</item>
     </string-array>
 
 </resources>

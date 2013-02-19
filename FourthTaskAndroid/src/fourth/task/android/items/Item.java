@@ -10,12 +10,16 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import fourth.task.android.utils.BitmapManager;
+
 /**
  * Simple class to represent particular item. Implements Serializable for saving
  * in file and Parcelable for passing between activities.
  */
 public class Item implements Serializable, Parcelable {
 	private static final long serialVersionUID = 1L;
+	private static final String DEGREE_CELCIUS = " \u2103";
+	@SuppressWarnings("unused") private static final String DEGREE_FAHRENHEIT = " \u2109";
 	
 	private String name;
 	private String color;
@@ -76,7 +80,7 @@ public class Item implements Serializable, Parcelable {
 	}
 	
 	public void setTemperature(String temperature) {
-		this.temperature = temperature;
+		this.temperature = temperature + DEGREE_CELCIUS;
 	}
 	
 	public String getConnectionString() {
@@ -87,20 +91,28 @@ public class Item implements Serializable, Parcelable {
 		this.connectionString = connectionString;
 	}
 	
+	public byte[] getBitmapArray() {
+		return this.bitmapArray;
+	}
+	
+	public void setBitmapArray(byte[] bitmapArray) {
+		this.bitmapArray = bitmapArray;
+	}
+	
 	public Bitmap getBitmap() {
-		return BitmapSerializator.deserializeBitmap(bitmapArray);
+		return BitmapManager.deserializeBitmap(bitmapArray);
 	}
 	
 	public void setBitmap(Bitmap bitmap) {
-		this.bitmapArray = BitmapSerializator.serializeBitmap(bitmap);
+		this.bitmapArray = BitmapManager.serializeBitmap(bitmap);
 	}
 	
 	/* Returns simple marker to draw on map. */
 	public MarkerOptions getMarker() {
 		// TODO add specific icon when needed:
 		// .icon(BitmapDescriptorFactory.fromResource(R.drawable.point));
-		return new MarkerOptions().position(new LatLng(latitude, longitude)).title(name)
-			.snippet(getTemperature() + " Celcius grads").icon(BitmapDescriptorFactory.defaultMarker());
+		return new MarkerOptions().position(new LatLng(latitude, longitude)).title(name).snippet(getTemperature())
+			.icon(BitmapDescriptorFactory.defaultMarker());
 	}
 	
 	/* toString and equals added to make renaming, deleting and adding operation
