@@ -15,6 +15,8 @@ import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
+import android.util.Log;
+import fourth.task.android.FourthTaskAndroid;
 import fourth.task.android.items.Item;
 import fourth.task.android.weather.parsers.IWeatherParser;
 
@@ -46,8 +48,12 @@ public abstract class AbstractWeatherServer implements IWeatherServer {
 			try {
 				asyncTask.get(); // thread join
 			}
-			catch (InterruptedException e) {}
-			catch (ExecutionException e) {}
+			catch (InterruptedException e) {
+				Log.e(FourthTaskAndroid.STRING_LOG_TAG, "AsyncTask InterruptedException");
+			}
+			catch (ExecutionException e) {
+				Log.e(FourthTaskAndroid.STRING_LOG_TAG, "AsyncTask ExecutionException");
+			}
 		}
 	}
 	
@@ -66,7 +72,9 @@ public abstract class AbstractWeatherServer implements IWeatherServer {
 				InputStream data = response.getEntity().getContent();
 				weatherParser.parseData(data, item);
 			}
-			catch (IOException e) {}
+			catch (IOException e) {
+				Log.e(FourthTaskAndroid.STRING_LOG_TAG, "HttpClient exception.");
+			}
 			
 			return null;
 		}
@@ -78,7 +86,9 @@ public abstract class AbstractWeatherServer implements IWeatherServer {
 			// Call the synchronous getFromLocation() method by passing in the lat/long values.
 			addresses = geocoder.getFromLocation(latitude, longitude, 1);
 		}
-		catch (IOException e) {}
+		catch (IOException e) {
+			Log.e(FourthTaskAndroid.STRING_LOG_TAG, "GeoCoder exception.");
+		}
 		
 		if (addresses != null && addresses.size() > 0) {
 			Address address = addresses.get(0);

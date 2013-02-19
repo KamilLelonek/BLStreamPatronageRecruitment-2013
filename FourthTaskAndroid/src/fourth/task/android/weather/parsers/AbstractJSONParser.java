@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import android.util.Log;
+import fourth.task.android.FourthTaskAndroid;
 import fourth.task.android.items.Item;
 
 public abstract class AbstractJSONParser implements IWeatherParser {
@@ -20,12 +22,16 @@ public abstract class AbstractJSONParser implements IWeatherParser {
 				line = bufferedReader.readLine();
 			}
 		}
-		catch (IOException e) {}
+		catch (IOException e) {
+			Log.e(FourthTaskAndroid.STRING_LOG_TAG, "BufferedReader reading InputStream exception.");
+		}
 		finally {
 			try {
 				bufferedReader.close();
 			}
-			catch (IOException e) {}
+			catch (IOException e) {
+				Log.e(FourthTaskAndroid.STRING_LOG_TAG, "BufferedReader closing stream exception.");
+			}
 		}
 		
 		updateWeatherData(item, stringBuilder.toString());

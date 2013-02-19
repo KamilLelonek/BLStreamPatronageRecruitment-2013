@@ -6,6 +6,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.graphics.Bitmap;
+import android.util.Log;
+import fourth.task.android.FourthTaskAndroid;
 import fourth.task.android.items.Item;
 import fourth.task.android.utils.BitmapManager;
 
@@ -22,18 +24,19 @@ public class OpenWeatherMapParser extends AbstractJSONParser {
 			item.setTemperature(String.valueOf(celciusDegrees));
 			
 			/* Icon */
-			try {
-				String weatherIconID = jsonObjectData.getJSONArray("weather").getJSONObject(0).getString("icon");
-				Bitmap weatherIcon = BitmapManager.downloadBitmap("http://openweathermap.org/img/w/" + weatherIconID
-					+ ".png");
-				item.setBitmap(weatherIcon);
-			}
-			catch (IOException e) {}
+			String weatherIconID = jsonObjectData.getJSONArray("weather").getJSONObject(0).getString("icon");
+			Bitmap weatherIcon = BitmapManager.downloadBitmap("http://openweathermap.org/img/w/" + weatherIconID
+				+ ".png");
+			item.setBitmap(weatherIcon);
 			
 		}
-		catch (JSONException e) {}
+		catch (JSONException e) {
+			Log.e(FourthTaskAndroid.STRING_LOG_TAG, "JSON parser exception.");
+		}
+		catch (IOException e) {
+			Log.e(FourthTaskAndroid.STRING_LOG_TAG, "BitmapManager exception.");
+		}
 	}
-	
 	/**
 	 * private class DownloadIconTask extends AsyncTask<String, Void, Bitmap> {
 	 * 

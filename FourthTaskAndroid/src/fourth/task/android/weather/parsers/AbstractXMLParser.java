@@ -6,6 +6,8 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import android.util.Log;
+import fourth.task.android.FourthTaskAndroid;
 import fourth.task.android.items.Item;
 
 public abstract class AbstractXMLParser implements IWeatherParser {
@@ -17,7 +19,9 @@ public abstract class AbstractXMLParser implements IWeatherParser {
 			xpp.setInput(is, "UTF-8");
 			updateWeatherData(item, xpp);
 		}
-		catch (XmlPullParserException e) {}
+		catch (XmlPullParserException e) {
+			Log.e(FourthTaskAndroid.STRING_LOG_TAG, "XmlPullParser exception.");
+		}
 	}
 	
 	public abstract void updateWeatherData(Item item, XmlPullParser xpp);

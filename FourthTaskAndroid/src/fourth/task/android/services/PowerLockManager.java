@@ -13,17 +13,22 @@ public class PowerLockManager {
 	/**
 	 * acquireLock method locks CPU from turning off to keep downloading data
 	 * even when screen is inactive.
+	 * 
+	 * @return if lock is held what means that data is being updated at the
+	 *         moment
 	 */
-	public static synchronized void acquireLock(Context context) {
+	public static synchronized boolean acquireLock(Context context) {
 		if (wakeLock == null) {
 			PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
 			wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "");
 		}
 		if (!wakeLock.isHeld()) {
 			wakeLock.acquire();
+			return true;
 		}
 		
 		Log.d(ServiceManager.SERVICE_LOG_TAG, "PowerLockReceiver: WakeLock acquired!");
+		return false;
 	}
 	
 	/**

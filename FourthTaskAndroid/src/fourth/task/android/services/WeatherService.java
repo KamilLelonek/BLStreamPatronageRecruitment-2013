@@ -44,8 +44,9 @@ public class WeatherService extends IntentService implements OnSharedPreferenceC
 		Log.d(ServiceManager.SERVICE_LOG_TAG, "WeatherService: Starting to update data.");
 		try {
 			if (items != null && !items.isEmpty()) {
-				PowerLockManager.acquireLock(getApplicationContext());
-				weatherServer.downloadData(items);
+				if (PowerLockManager.acquireLock(getApplicationContext())) {
+					weatherServer.downloadData(items);
+				}
 			}
 		}
 		finally {
