@@ -28,6 +28,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import fourth.task.android.items.Item;
 import fourth.task.android.services.WeatherService;
+import fourth.task.android.utils.ApplicationObject;
 
 public class MapViewFragment extends Fragment {
 	private final int ONE_SEC_IN_MILISEC = 1000;
@@ -37,6 +38,7 @@ public class MapViewFragment extends Fragment {
 	private GoogleMap mMap;
 	private LocalBroadcastManager localBroadcastManager;
 	private BroadcastReceiver broadcastReceiver;
+	private ApplicationObject applicationObject;
 	
 	// For saving view state.
 	private View viewHolder;
@@ -47,7 +49,7 @@ public class MapViewFragment extends Fragment {
 			@Override public void onReceive(Context context, Intent intent) {
 				// Refresh map view
 				mMap.clear();
-				addItemsToMap(ListViewFragment.itemAdapter.getAllItems());
+				addItemsToMap();
 			}
 		};
 	}
@@ -56,6 +58,7 @@ public class MapViewFragment extends Fragment {
 		super.onAttach(activity);
 		this.activity = activity;
 		localBroadcastManager = LocalBroadcastManager.getInstance(activity);
+		applicationObject = (ApplicationObject) activity.getApplication();
 	}
 	
 	@Override public void onResume() {
@@ -105,7 +108,7 @@ public class MapViewFragment extends Fragment {
 			}
 			
 			/* Filling map with points */
-			addItemsToMap(ListViewFragment.itemAdapter.getAllItems());
+			addItemsToMap();
 		}
 	}
 	
@@ -113,7 +116,8 @@ public class MapViewFragment extends Fragment {
 	 * Simple items managing.
 	 */
 	/* Puts markers on map from items list */
-	private void addItemsToMap(ArrayList<Item> items) {
+	private void addItemsToMap() {
+		ArrayList<Item> items = applicationObject.getItemAdapter().getAllItems();
 		ArrayList<MarkerOptions> markers = createMarkerList(items);
 		for (MarkerOptions marker : markers) {
 			addMarkerToMap(marker);

@@ -4,11 +4,25 @@ import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
+import fourth.task.android.items.ItemAdapter;
 
 /**
  * ApplicationObject keeps information about current network state.
  */
 public class ApplicationObject extends Application {
+	/**************************************************
+	 ************** Item Adapter Manager **************
+	 **************************************************/
+	ItemAdapter itemAdapter;
+	
+	public ItemAdapter getItemAdapter() {
+		return this.itemAdapter;
+	}
+	
+	public void setItemAdapter(ItemAdapter itemAdapter) {
+		this.itemAdapter = itemAdapter;
+	}
+	
 	/**************************************************
 	 *************** Networking Manager ***************
 	 **************************************************/

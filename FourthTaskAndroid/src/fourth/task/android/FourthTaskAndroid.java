@@ -38,9 +38,10 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 	
 	private ActionBar actionBar;
 	private ProgressDialog progressDialog;
-	private boolean isServiceBound;
 	private LocalBroadcastManager localBroadcastManager;
 	private BroadcastReceiver broadcastReceiver;
+	private ApplicationObject applicationObject;
+	private boolean isServiceBound;
 	
 	private WeatherService weatherService;
 	private final ServiceConnection serviceConnection = new ServiceConnection() {
@@ -51,7 +52,7 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 		@Override public void onServiceConnected(ComponentName name, IBinder service) {
 			weatherService = ((WeatherBinder) service).getService();
 			
-			setWeatherServiceData(ListViewFragment.itemAdapter.getItems());
+			setWeatherServiceData(applicationObject.getItemAdapter().getItems());
 			callForServiceManager();
 			
 			isServiceBound = true;
@@ -67,6 +68,8 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.fourth_task_android);
+		
+		applicationObject = (ApplicationObject) getApplication();
 		
 		fragmentManager = getFragmentManager();
 		fragmentManager.addOnBackStackChangedListener(new SmartBackStackListener());
@@ -112,7 +115,6 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 	}
 	
 	private boolean isNetworkOnline() {
-		ApplicationObject applicationObject = (ApplicationObject) getApplication();
 		if (applicationObject.isConnectedToInternet()) return true;
 		
 		new FragmentDialogInternetConnection().show(getFragmentManager(), "");

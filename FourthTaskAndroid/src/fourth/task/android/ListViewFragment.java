@@ -26,6 +26,7 @@ import fourth.task.android.items.Item;
 import fourth.task.android.items.ItemAdapter;
 import fourth.task.android.items.ItemModel;
 import fourth.task.android.services.WeatherService;
+import fourth.task.android.utils.ApplicationObject;
 import fourth.task.android.utils.FragmentDialogAddEdit;
 import fourth.task.android.utils.PreferencesManager;
 
@@ -40,7 +41,7 @@ public class ListViewFragment extends ListFragment implements FragmentDialogAddE
 	private BroadcastReceiver broadcastReceiver;
 	
 	// Should be accessible by reference here, in mapView and in activity.
-	public static ItemAdapter itemAdapter;
+	private ItemAdapter itemAdapter;
 	
 	@Override public void onAttach(Activity activity) {
 		super.onAttach(activity);
@@ -74,6 +75,10 @@ public class ListViewFragment extends ListFragment implements FragmentDialogAddE
 	@Override public void onStart() {
 		super.onStart();
 		readItems();
+		
+		ApplicationObject app = ((ApplicationObject) activity.getApplication());
+		app.setItemAdapter(itemAdapter);
+		
 		localBroadcastManager.registerReceiver(broadcastReceiver, new IntentFilter(WeatherService.INTENT_FILTER));
 	}
 	
