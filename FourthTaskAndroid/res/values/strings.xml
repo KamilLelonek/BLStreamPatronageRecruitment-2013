@@ -6,25 +6,25 @@
 
     <!-- Labels -->
     <string name="label_filterHint">type in to filter</string>
-    <string name="label_itemName">Name</string>
-    <string name="label_itemLatitude">Latitude</string>
-    <string name="label_itemLongitude">Longitude</string>
-    <string name="label_itemColor">Color</string>
-    <string name="label_showMap">Show selected items on map</string>
-    <string name="label_manageItem">Manage item</string>
+    <string name="label_cityName">Name</string>
+    <string name="label_cityLatitude">Latitude</string>
+    <string name="label_cityLongitude">Longitude</string>
+    <string name="label_cityColor">Color</string>
+    <string name="label_showMap">Show selected citys on map</string>
+    <string name="label_manageCity">Manage city</string>
     <string name="label_list">List</string>
     <string name="label_map">Map</string>
     <string name="label_degree_Celsius">degree Celsius</string>
     <!-- Menus -->
     <string name="menu_edit">Edit</string>
     <string name="menu_delete">Delete</string>
-    <string name="menu_addItem">Add new item</string>
+    <string name="menu_addCity">Add new city</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_filter">Filter list</string>
     <string name="menu_refresh">Refresh</string>
     <!-- Alerts -->
     <string name="alert_data_not_valid">Provided data is not correct</string>
-    <string name="alert_item_exists">Item already exists</string>
+    <string name="alert_city_exists">City already exists</string>
     <string name="alert_internet_connection_title">Internet connection not available!</string>
     <string name="alert_internet_connection_body">Please enable Mobile data or Wi-Fi.</string>
     <string name="alert_progress_dialog_message">Updating weather data&#8230;</string>

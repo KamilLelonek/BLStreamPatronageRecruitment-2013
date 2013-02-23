@@ -16,10 +16,10 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import fourth.task.android.ListViewFragment;
 import fourth.task.android.R;
-import fourth.task.android.items.Item;
+import fourth.task.android.cities.City;
 
 /**
- * FragmentDialog representing add/edit item view.
+ * FragmentDialog representing add/edit city view.
  */
 public class DialogFragmentAddEdit extends DialogFragment {
 	private final String REGEX_FOR_SIGNED_DOUBLE_NUMBERS = "-?\\d+(.\\d+)?";
@@ -28,7 +28,7 @@ public class DialogFragmentAddEdit extends DialogFragment {
 	
 	private Activity activity;
 	private AlertDialog alertDialog;
-	private Item currentItem;
+	private City currentCity;
 	
 	private View dialogView;
 	private EditText nameEditText;
@@ -36,13 +36,13 @@ public class DialogFragmentAddEdit extends DialogFragment {
 	private EditText longitudeEditText;
 	private Button okButton;
 	private Button cancelButton;
-	private Spinner spinnerItemColor;
+	private Spinner spinnerCityColor;
 	
 	/* The activity that creates an instance of this dialog fragment must
 	 * implement this interface in order to receive event callback. Each method
 	 * passes the DialogFragment in case the host needs to query it. */
 	public interface NoticeDialogListener extends Serializable {
-		void onDialogPositiveClick(Item newItem, Item oldItem);
+		void onDialogPositiveClick(City newCity, City oldCity);
 	}
 	
 	// Use this instance of the interface to deliver action events
@@ -59,9 +59,9 @@ public class DialogFragmentAddEdit extends DialogFragment {
 		// Initialize particular views if not initialized yet
 		if (!isViewInitialized) {
 			dialogView = activity.getLayoutInflater().inflate(R.layout.fragment_add_dialog, null);
-			nameEditText = (EditText) dialogView.findViewById(R.id.EditTextItemName);
-			latitudeEditText = (EditText) dialogView.findViewById(R.id.EditTextItemLatitude);
-			longitudeEditText = (EditText) dialogView.findViewById(R.id.EditTextItemLongitude);
+			nameEditText = (EditText) dialogView.findViewById(R.id.EditTextCityName);
+			latitudeEditText = (EditText) dialogView.findViewById(R.id.EditTextCityLatitude);
+			longitudeEditText = (EditText) dialogView.findViewById(R.id.EditTextCityLongitude);
 			
 			okButton = (Button) dialogView.findViewById(R.id.buttonOkAlertDialog);
 			okButton.setOnClickListener(new OnClickListener() {
@@ -77,37 +77,37 @@ public class DialogFragmentAddEdit extends DialogFragment {
 				}
 			});
 			
-			spinnerItemColor = (Spinner) dialogView.findViewById(R.id.SpinnerItemColor);
+			spinnerCityColor = (Spinner) dialogView.findViewById(R.id.SpinnerCityColor);
 			
 			isViewInitialized = true;
 		}
 		
-		currentItem = getCurrentItem();
-		if (currentItem != null) {
-			nameEditText.setText(currentItem.getName());
+		currentCity = getCurrentCity();
+		if (currentCity != null) {
+			nameEditText.setText(currentCity.getName());
 			nameEditText.selectAll();
-			latitudeEditText.setText(String.valueOf(currentItem.getLatitude()));
-			longitudeEditText.setText(String.valueOf(currentItem.getLongitude()));
-			spinnerItemColor.setSelection(Arrays.asList(getResources().getStringArray(R.array.colors)).indexOf(
-				currentItem.getColor().toUpperCase()));
+			latitudeEditText.setText(String.valueOf(currentCity.getLatitude()));
+			longitudeEditText.setText(String.valueOf(currentCity.getLongitude()));
+			spinnerCityColor.setSelection(Arrays.asList(getResources().getStringArray(R.array.colors)).indexOf(
+				currentCity.getColor().toUpperCase()));
 		}
 		
 		// Build custom alert dialog, create it and return as a result
-		alertDialog = new AlertDialog.Builder(activity).setTitle(R.string.label_manageItem).setView(dialogView)
+		alertDialog = new AlertDialog.Builder(activity).setTitle(R.string.label_manageCity).setView(dialogView)
 			.create();
 		
 		return alertDialog;
 	}
 	
-	private Item getCurrentItem() {
-		Item currentItem = null;
-		Bundle itemBundle = getArguments();
+	private City getCurrentCity() {
+		City currentCity = null;
+		Bundle cityBundle = getArguments();
 		
-		if (itemBundle != null) {
-			currentItem = (Item) itemBundle.getSerializable(ListViewFragment.STRING_CURRENT_ITEM);
+		if (cityBundle != null) {
+			currentCity = (City) cityBundle.getSerializable(ListViewFragment.STRING_CURRENT_CITY);
 		}
 		
-		return currentItem;
+		return currentCity;
 	}
 	
 	public void onOkButtonClick() {
@@ -117,9 +117,9 @@ public class DialogFragmentAddEdit extends DialogFragment {
 		else {
 			if (mListener != null) {
 				mListener.onDialogPositiveClick(
-					new Item(nameEditText.getText().toString(), Double.valueOf(latitudeEditText.getText().toString()),
-						Double.valueOf(longitudeEditText.getText().toString()), currentItem.getTemperature(),
-						spinnerItemColor.getSelectedItem().toString(), currentItem.getBitmapArray()), currentItem);
+					new City(nameEditText.getText().toString(), Double.valueOf(latitudeEditText.getText().toString()),
+						Double.valueOf(longitudeEditText.getText().toString()), currentCity.getTemperature(),
+						spinnerCityColor.getSelectedItem().toString(), currentCity.getBitmapArray()), currentCity);
 			}
 			onCancelButtonClick();
 		}
@@ -153,6 +153,6 @@ public class DialogFragmentAddEdit extends DialogFragment {
 		if (latitudeFloat > 90 || latitudeFloat < -90) return false;
 		if (longitudeFloat > 180 || longitudeFloat < -180) return false;
 		
-		return spinnerItemColor.getSelectedItemPosition() != 0;
+		return spinnerCityColor.getSelectedItemPosition() != 0;
 	}
 }

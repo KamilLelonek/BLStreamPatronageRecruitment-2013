@@ -112,8 +112,8 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 		return true;
 	}
 	
-	@Override public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
+	@Override public boolean onOptionsItemSelected(MenuItem city) {
+		switch (city.getItemId()) {
 			case R.id.menu_refresh:
 				if (isNetworkOnline()) {
 					startService(new Intent(FourthTaskAndroid.this, ServiceManager.class));
@@ -129,7 +129,7 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 				actionBar.hide();
 				return true;
 			default:
-				return super.onOptionsItemSelected(item);
+				return super.onOptionsItemSelected(city);
 		}
 	}
 	
@@ -157,7 +157,7 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 				/* When BroadcastReceiver receives intent that mean it needs to update
 				 * item adapter data. It has to be done right here because service runs
 				 * in different (not UI) thread, and mustn't have influence on layout. */
-				applicationObject.getItemAdapter().notifyDataSetChanged();
+				applicationObject.getCityAdapter().notifyDataSetChanged();
 			}
 		}
 	}

@@ -11,20 +11,25 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import fourth.task.android.FourthTaskAndroid;
-import fourth.task.android.items.Item;
-import fourth.task.android.items.ItemModel;
+import fourth.task.android.PreferencesFragment;
+import fourth.task.android.R;
+import fourth.task.android.cities.City;
+import fourth.task.android.cities.CityModel;
+import fourth.task.android.weather.servers.IWeatherServer;
+import fourth.task.android.weather.servers.OpenWeatherMapServer;
+import fourth.task.android.weather.servers.WorldWeatherOnlineServer;
 
 /**
  * This class allows to manage application shared preferences and also managing
  * file system by list serialization.
  */
 public class PreferencesManager {
-	private final String STRING_CITIES = "cities";
 	private final String STRING_FIRST_RUN = "isFirstRun";
 	private final String STRING_FILE_NAME_LIST = "savedList.bls";
-	private final String STRING_FILE_NAME_ITEM = "savedItem%d.bls";
+	private final String STRING_FILE_NAME_CITY = "savedCity%d.bls";
 	private final String STRING_LOG_TAG = "PreferencesManager";
 	
 	private SharedPreferences sharedPreferences;
@@ -33,7 +38,7 @@ public class PreferencesManager {
 	
 	public PreferencesManager(Context context) {
 		this.context = context;
-		sharedPreferences = context.getSharedPreferences(STRING_CITIES, Context.MODE_PRIVATE);
+		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		sharedPreferencesEditor = sharedPreferences.edit();
 	}
 	
@@ -55,6 +60,17 @@ public class PreferencesManager {
 	}
 	
 	/**
+	 * @return current weather server where to download data from
+	 */
+	public IWeatherServer getCurrentWeatherServer() {
+		String[] availableServers = context.getResources().getStringArray(R.array.preferences_weather_servers_list);
+		String serverName = sharedPreferences.getString(PreferencesFragment.PREFERENCE_SERVERS, availableServers[0]);
+		
+		if (serverName.equals(availableServers[1])) return new WorldWeatherOnlineServer(context);
+		return new OpenWeatherMapServer(context);
+	}
+	
+	/**
 	 * Creates specific application folder and file to sore data
 	 * 
 	 * @return file to keep application data
@@ -69,8 +85,8 @@ public class PreferencesManager {
 		return new File(getApplicationFolder(), STRING_FILE_NAME_LIST);
 	}
 	
-	private File getFileForItem(int fileID) {
-		return new File(getApplicationFolder(), String.format(STRING_FILE_NAME_ITEM, fileID));
+	private File getFileForCity(int fileID) {
+		return new File(getApplicationFolder(), String.format(STRING_FILE_NAME_CITY, fileID));
 	}
 	
 	private String getFilePath(File file) {
@@ -81,30 +97,30 @@ public class PreferencesManager {
 		return getFilePath(getFileForList());
 	}
 	
-	private String getItemFilePath(int fileID) {
-		return getFilePath(getFileForItem(fileID));
+	private String getCityFilePath(int fileID) {
+		return getFilePath(getFileForCity(fileID));
 	}
 	
 	/**
-	 * Serializes list of items
+	 * Serializes list of citys
 	 * 
-	 * @param list list of items to serialize
+	 * @param list list of citys to serialize
 	 */
-	public void saveListToFile(List<Item> list) {
+	public void saveListToFile(List<City> list) {
 		serializator(list, getListFilePath());
 	}
 	
 	/**
-	 * Serializes simple items
+	 * Serializes simple citys
 	 * 
-	 * @param item item to serialize
+	 * @param city city to serialize
 	 */
-	public void saveItemToFile(Item item, int fileID) {
-		serializator(item, getItemFilePath(fileID));
+	public void saveCityToFile(City city, int fileID) {
+		serializator(city, getCityFilePath(fileID));
 	}
 	
-	public boolean deleteItemFile(int fileID) {
-		return getFileForItem(fileID).delete();
+	public boolean deleteCityFile(int fileID) {
+		return getFileForCity(fileID).delete();
 	}
 	
 	/**
@@ -129,9 +145,9 @@ public class PreferencesManager {
 	 * Reads list from file. If it is first application run then list are
 	 * obtained from data model, in the other case list is deserialized.
 	 * 
-	 * @return list of items
+	 * @return list of citys
 	 */
-	public List<Item> readListFromFile() {
+	public List<City> readListFromFile() {
 		if (!isFirstRun()) {
 			Log.d(FourthTaskAndroid.STRING_LOG_TAG, "Resuming application state.");
 			return deserializeList();
@@ -139,28 +155,28 @@ public class PreferencesManager {
 		
 		Log.d(FourthTaskAndroid.STRING_LOG_TAG, "First application run!");
 		setFirstRunFalse();
-		return ItemModel.getItems();
+		return CityModel.getCities();
 	}
 	
 	/**
-	 * Deserializes list of items
+	 * Deserializes list of citys
 	 * 
-	 * @return deserialized list of items
+	 * @return deserialized list of citys
 	 */
-	@SuppressWarnings("unchecked") private List<Item> deserializeList() {
-		Log.d(STRING_LOG_TAG, "Reading items' list from file.");
-		List<Item> list = (List<Item>) deserializator(getListFilePath());
-		return list == null ? new ArrayList<Item>() : list;
+	@SuppressWarnings("unchecked") private List<City> deserializeList() {
+		Log.d(STRING_LOG_TAG, "Reading citys' list from file.");
+		List<City> list = (List<City>) deserializator(getListFilePath());
+		return list == null ? new ArrayList<City>() : list;
 	}
 	
 	/**
-	 * Deserializes item
+	 * Deserializes city
 	 * 
-	 * @return deserialized item
+	 * @return deserialized city
 	 */
-	public Item readItemFromFile(int fileID) {
-		Log.d(STRING_LOG_TAG, "Reading item from file.");
-		return (Item) deserializator(getItemFilePath(fileID));
+	public City readCityFromFile(int fileID) {
+		Log.d(STRING_LOG_TAG, "Reading city from file.");
+		return (City) deserializator(getCityFilePath(fileID));
 	}
 	
 	/**

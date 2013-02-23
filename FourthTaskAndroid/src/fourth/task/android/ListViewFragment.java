@@ -16,19 +16,22 @@ import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
-import fourth.task.android.items.Item;
-import fourth.task.android.items.ItemAdapter;
+import fourth.task.android.cities.City;
+import fourth.task.android.cities.CityAdapter;
 import fourth.task.android.utils.ApplicationObject;
 import fourth.task.android.utils.DialogFragmentAddEdit;
 import fourth.task.android.utils.PreferencesManager;
 
+/**
+ * Fragment presenting main application view with list of cites and its weather.
+ */
 public class ListViewFragment extends ListFragment implements DialogFragmentAddEdit.NoticeDialogListener {
 	private static final long serialVersionUID = 1L;
-	public static final String STRING_CURRENT_ITEM = "current_item";
+	public static final String STRING_CURRENT_CITY = "current_city";
 	
 	private FourthTaskAndroid activity;
 	private PreferencesManager preferencesManager;
-	private ItemAdapter itemAdapter;
+	private CityAdapter cityAdapter;
 	
 	@Override public void onAttach(Activity activity) {
 		super.onAttach(activity);
@@ -48,38 +51,38 @@ public class ListViewFragment extends ListFragment implements DialogFragmentAddE
 		registerForContextMenu(getListView());
 	}
 	
-	/* Deserializing items */
+	/* Deserializing citys */
 	@Override public void onStart() {
 		super.onStart();
-		if (itemAdapter == null) {
-			readItems();
+		if (cityAdapter == null) {
+			readCitys();
 		}
 		ApplicationObject app = ((ApplicationObject) activity.getApplication());
-		app.setItemAdapter(itemAdapter);
+		app.setCityAdapter(cityAdapter);
 	}
 	
-	private void readItems() {
-		List<Item> items = preferencesManager.readListFromFile();
-		itemAdapter = new ItemAdapter(activity, items);
-		setListAdapter(itemAdapter);
+	private void readCitys() {
+		List<City> cities = preferencesManager.readListFromFile();
+		cityAdapter = new CityAdapter(activity, cities);
+		setListAdapter(cityAdapter);
 	}
 	
-	/* Serializing items */
+	/* Serializing citys */
 	@Override public void onStop() {
-		itemAdapter.revertData();
-		preferencesManager.saveListToFile(itemAdapter.getItems());
+		cityAdapter.revertData();
+		preferencesManager.saveListToFile(cityAdapter.getCities());
 		super.onStop();
 	}
 	
-	@Override public void onDialogPositiveClick(Item newItem, Item oldItem) {
-		if (oldItem != null) {
-			itemAdapter.remove(oldItem);
+	@Override public void onDialogPositiveClick(City newCity, City oldCity) {
+		if (oldCity != null) {
+			cityAdapter.remove(oldCity);
 		}
-		itemAdapter.add(newItem);
+		cityAdapter.add(newCity);
 	}
 	
 	/**
-	 * Context menu initialization. ContextMenu is used to edit or remove item
+	 * Context menu initialization. ContextMenu is used to edit or remove city
 	 * from list.
 	 */
 	@Override public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
@@ -87,41 +90,41 @@ public class ListViewFragment extends ListFragment implements DialogFragmentAddE
 		activity.getMenuInflater().inflate(R.menu.menu_context_list_fragment, menu);
 	}
 	
-	@Override public boolean onContextItemSelected(MenuItem item) {
-		int itemPosition = ((AdapterContextMenuInfo) item.getMenuInfo()).position;
-		Item selectedItem = itemAdapter.getItem(itemPosition);
+	@Override public boolean onContextItemSelected(MenuItem city) {
+		int cityPosition = ((AdapterContextMenuInfo) city.getMenuInfo()).position;
+		City selectedCity = cityAdapter.getItem(cityPosition);
 		
-		switch (item.getItemId()) {
+		switch (city.getItemId()) {
 			case R.id.menu_edit:
-				return editItem(selectedItem);
+				return editCity(selectedCity);
 			case R.id.menu_delete:
-				itemAdapter.remove(selectedItem);
+				cityAdapter.remove(selectedCity);
 				return true;
 			default:
-				return super.onContextItemSelected(item);
+				return super.onContextItemSelected(city);
 		}
 	}
 	
 	/**
-	 * Helper method which edits selected item by showing dialog with filled
-	 * views from selected item.
+	 * Helper method which edits selected city by showing dialog with filled
+	 * views from selected city.
 	 * 
-	 * @param itemToEdit item that need to be edited
-	 * @return true to handle context menu for selected item in list view
+	 * @param cityToEdit city that need to be edited
+	 * @return true to handle context menu for selected city in list view
 	 */
-	private boolean editItem(Item itemToEdit) {
-		Bundle itemBundle = new Bundle();
-		itemBundle.putSerializable(STRING_CURRENT_ITEM, itemToEdit);
+	private boolean editCity(City cityToEdit) {
+		Bundle cityBundle = new Bundle();
+		cityBundle.putSerializable(STRING_CURRENT_CITY, cityToEdit);
 		
 		DialogFragment newFragment = new DialogFragmentAddEdit();
-		newFragment.setArguments(itemBundle);
-		newFragment.show(getFragmentManager(), "edit_item");
+		newFragment.setArguments(cityBundle);
+		newFragment.show(getFragmentManager(), "edit_city");
 		
 		return true;
 	}
 	
 	/**
-	 * Options menu initialization. OptionsMenu is used to add new item to list.
+	 * Options menu initialization. OptionsMenu is used to add new city to list.
 	 */
 	
 	@Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -135,12 +138,12 @@ public class ListViewFragment extends ListFragment implements DialogFragmentAddE
 		filterTextView.setQueryHint(getString(R.string.label_filterHint));
 		filterTextView.setOnQueryTextListener(new OnQueryTextListener() {
 			@Override public boolean onQueryTextSubmit(String query) {
-				itemAdapter.getFilter().filter(query);
+				cityAdapter.getFilter().filter(query);
 				return false;
 			}
 			
 			@Override public boolean onQueryTextChange(String newText) {
-				itemAdapter.getFilter().filter(newText);
+				cityAdapter.getFilter().filter(newText);
 				return false;
 			}
 		});
@@ -148,7 +151,7 @@ public class ListViewFragment extends ListFragment implements DialogFragmentAddE
 		MenuItem menuItem = menu.findItem(R.id.menu_filter);
 		menuItem.setOnActionExpandListener(new OnActionExpandListener() {
 			@Override public boolean onMenuItemActionCollapse(MenuItem item) {
-				itemAdapter.revertData();
+				cityAdapter.revertData();
 				return true;
 			}
 			
@@ -163,7 +166,7 @@ public class ListViewFragment extends ListFragment implements DialogFragmentAddE
 	@Override public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.menu_add:
-				new DialogFragmentAddEdit().show(getFragmentManager(), "add_item");
+				new DialogFragmentAddEdit().show(getFragmentManager(), "add_city");
 		}
 		return super.onOptionsItemSelected(item);
 	}

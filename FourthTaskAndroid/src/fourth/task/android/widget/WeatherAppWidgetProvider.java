@@ -1,7 +1,5 @@
 package fourth.task.android.widget;
 
-import java.util.Arrays;
-
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -10,17 +8,15 @@ import android.content.Intent;
 import android.widget.RemoteViews;
 import fourth.task.android.FourthTaskAndroid;
 import fourth.task.android.R;
-import fourth.task.android.items.Item;
+import fourth.task.android.cities.City;
 import fourth.task.android.utils.PreferencesManager;
-import fourth.task.android.weather.servers.WorldWeatherOnlineServer;
+import fourth.task.android.weather.servers.IWeatherServer;
 
 public class WeatherAppWidgetProvider extends AppWidgetProvider {
 	private PreferencesManager preferencesManager;
 	private AppWidgetManager appWidgetManager;
-	private Context context;
 	
 	@Override public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-		this.context = context;
 		this.appWidgetManager = appWidgetManager;
 		this.preferencesManager = new PreferencesManager(context);
 		
@@ -40,24 +36,25 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
 	
 	private void updateRemoteViews(RemoteViews views, int appWidgetId) {
 		// Tell the AppWidgetManager to perform an update on the current app widget
-		Item item = preferencesManager.readItemFromFile(appWidgetId);
-		if (item != null) {
-			updateItem(item, appWidgetId);
-			views.setTextViewText(R.id.textViewWidgetItemName, item.getName());
-			views.setTextViewText(R.id.textViewWidgetItemTemperature, item.getTemperature());
-			views.setImageViewBitmap(R.id.imageButtonWidgetWeather, item.getBitmap());
+		City city = preferencesManager.readCityFromFile(appWidgetId);
+		if (city != null) {
+			updateCity(city, appWidgetId);
+			views.setTextViewText(R.id.textViewWidgetCityName, city.getName());
+			views.setTextViewText(R.id.textViewWidgetCityTemperature, city.getTemperature());
+			views.setImageViewBitmap(R.id.imageButtonWidgetWeather, city.getBitmap());
 		}
 		appWidgetManager.updateAppWidget(appWidgetId, views);
 	}
 	
-	private void updateItem(Item item, int appWidgetId) {
-		new WorldWeatherOnlineServer(context).downloadData(Arrays.asList(new Item[] { item }));
-		preferencesManager.saveItemToFile(item, appWidgetId);
+	private void updateCity(City city, int appWidgetId) {
+		IWeatherServer weatherServer = preferencesManager.getCurrentWeatherServer();
+		weatherServer.downloadData(city);
+		preferencesManager.saveCityToFile(city, appWidgetId);
 	}
 	
 	@Override public void onDeleted(Context context, int[] appWidgetIds) {
 		super.onDeleted(context, appWidgetIds);
 		PreferencesManager preferencesManager = new PreferencesManager(context);
-		preferencesManager.deleteItemFile(appWidgetIds[0]);
+		preferencesManager.deleteCityFile(appWidgetIds[0]);
 	}
 }

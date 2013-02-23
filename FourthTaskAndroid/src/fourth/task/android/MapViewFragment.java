@@ -26,7 +26,7 @@ import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import fourth.task.android.items.Item;
+import fourth.task.android.cities.City;
 import fourth.task.android.services.WeatherService;
 import fourth.task.android.utils.ApplicationObject;
 
@@ -49,7 +49,7 @@ public class MapViewFragment extends Fragment {
 			@Override public void onReceive(Context context, Intent intent) {
 				// Refresh map view
 				mMap.clear();
-				addItemsToMap();
+				addCitysToMap();
 			}
 		};
 	}
@@ -110,26 +110,26 @@ public class MapViewFragment extends Fragment {
 		}
 		/* Filling map with points */
 		mMap.clear();
-		addItemsToMap();
+		addCitysToMap();
 	}
 	
 	/**
-	 * Simple items managing.
+	 * Simple citys managing.
 	 */
-	/* Puts markers on map from items list */
-	private void addItemsToMap() {
-		ArrayList<Item> items = applicationObject.getItemAdapter().getAllItems();
-		ArrayList<MarkerOptions> markers = createMarkerList(items);
+	/* Puts markers on map from citys list */
+	private void addCitysToMap() {
+		ArrayList<City> cities = applicationObject.getCityAdapter().getAllCities();
+		ArrayList<MarkerOptions> markers = createMarkerList(cities);
 		for (MarkerOptions marker : markers) {
 			addMarkerToMap(marker);
 		}
 	}
 	
-	/* Creates marker list from item list */
-	private ArrayList<MarkerOptions> createMarkerList(ArrayList<Item> items) {
+	/* Creates marker list from city list */
+	private ArrayList<MarkerOptions> createMarkerList(ArrayList<City> cities) {
 		ArrayList<MarkerOptions> markers = new ArrayList<MarkerOptions>();
-		for (Item item : items) {
-			markers.add(item.getMarker());
+		for (City city : cities) {
+			markers.add(city.getMarker());
 		}
 		return markers;
 	}

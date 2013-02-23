@@ -44,7 +44,7 @@ public class NetworkStateChangeReceiver extends BroadcastReceiver {
 	/* When there's no active Internet connection ServiceManager is being
 	 * notified about that in order to turn off updates. In the other case it
 	 * receives message that phone is connected to active network and service
-	 * should start to update items data. */
+	 * should start to update cities data. */
 	private void controlServiceManager(Context context) {
 		State networkInfoMobileState = networkInfoMobile.getState();
 		// networkInfoMobileState == DISCONNECTED	=> Not connected

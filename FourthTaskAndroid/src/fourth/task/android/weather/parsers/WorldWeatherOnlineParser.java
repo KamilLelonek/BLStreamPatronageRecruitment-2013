@@ -8,20 +8,20 @@ import org.xmlpull.v1.XmlPullParserException;
 import android.graphics.Bitmap;
 import android.util.Log;
 import fourth.task.android.FourthTaskAndroid;
-import fourth.task.android.items.Item;
+import fourth.task.android.cities.City;
 import fourth.task.android.utils.BitmapManager;
 
 public class WorldWeatherOnlineParser extends AbstractXMLParser {
 	private XmlPullParser xpp;
 	
-	@Override public void updateWeatherData(Item item, XmlPullParser xpp) {
+	@Override public void updateWeatherData(City city, XmlPullParser xpp) {
 		this.xpp = xpp;
 		try {
 			skipToTag("temp_C");
-			item.setTemperature(xpp.nextText());
+			city.setTemperature(xpp.nextText());
 			skipToTag("weatherIconUrl");
 			Bitmap weatherIcon = BitmapManager.downloadBitmap(xpp.nextText());
-			item.setBitmap(weatherIcon);
+			city.setBitmap(weatherIcon);
 		}
 		catch (XmlPullParserException e) {
 			Log.e(FourthTaskAndroid.STRING_LOG_TAG, "XmlPullParser exception.");

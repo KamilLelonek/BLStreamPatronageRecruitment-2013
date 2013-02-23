@@ -7,11 +7,11 @@ import java.io.InputStreamReader;
 
 import android.util.Log;
 import fourth.task.android.FourthTaskAndroid;
-import fourth.task.android.items.Item;
+import fourth.task.android.cities.City;
 
 public abstract class AbstractJSONParser implements IWeatherParser {
 	
-	@Override public void parseData(InputStream is, Item item) {
+	@Override public void parseData(InputStream is, City city) {
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is));
 		StringBuilder stringBuilder = new StringBuilder();
 		
@@ -34,8 +34,8 @@ public abstract class AbstractJSONParser implements IWeatherParser {
 			}
 		}
 		
-		updateWeatherData(item, stringBuilder.toString());
+		updateWeatherData(city, stringBuilder.toString());
 	}
 	
-	public abstract void updateWeatherData(Item item, String data);
+	public abstract void updateWeatherData(City city, String data);
 }

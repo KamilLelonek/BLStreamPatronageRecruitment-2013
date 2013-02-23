@@ -4,23 +4,24 @@ import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
-import fourth.task.android.items.ItemAdapter;
+import fourth.task.android.cities.CityAdapter;
 
 /**
- * ApplicationObject keeps information about current network state.
+ * ApplicationObject is accessible within entire application and allows to keep
+ * references to useful objects.
  */
 public class ApplicationObject extends Application {
 	/**************************************************
-	 ************** Item Adapter Manager **************
+	 ************** City Adapter Manager **************
 	 **************************************************/
-	ItemAdapter itemAdapter;
+	CityAdapter cityAdapter;
 	
-	public ItemAdapter getItemAdapter() {
-		return this.itemAdapter;
+	public CityAdapter getCityAdapter() {
+		return this.cityAdapter;
 	}
 	
-	public void setItemAdapter(ItemAdapter itemAdapter) {
-		this.itemAdapter = itemAdapter;
+	public void setCityAdapter(CityAdapter cityAdapter) {
+		this.cityAdapter = cityAdapter;
 	}
 	
 	/**************************************************

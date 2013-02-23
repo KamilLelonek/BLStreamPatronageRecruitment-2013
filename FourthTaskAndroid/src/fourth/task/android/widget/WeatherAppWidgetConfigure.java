@@ -13,8 +13,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.RemoteViews;
 import fourth.task.android.FourthTaskAndroid;
 import fourth.task.android.R;
-import fourth.task.android.items.Item;
-import fourth.task.android.items.ItemAdapter;
+import fourth.task.android.cities.City;
+import fourth.task.android.cities.CityAdapter;
 import fourth.task.android.utils.PreferencesManager;
 
 public class WeatherAppWidgetConfigure extends ListActivity {
@@ -41,27 +41,27 @@ public class WeatherAppWidgetConfigure extends ListActivity {
 		
 		getListView().setOnItemClickListener(new OnItemClickListener() {
 			@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				selectItem(position);
+				selectCity(position);
 			}
 		});
 		
-		readItems();
+		readCitys();
 	}
 	
-	private void readItems() {
-		List<Item> items = preferencesManager.readListFromFile();
-		ItemAdapter itemAdapter = new ItemAdapter(WeatherAppWidgetConfigure.this, items);
-		setListAdapter(itemAdapter);
+	private void readCitys() {
+		List<City> cities = preferencesManager.readListFromFile();
+		CityAdapter cityAdapter = new CityAdapter(WeatherAppWidgetConfigure.this, cities);
+		setListAdapter(cityAdapter);
 	}
 	
-	private void selectItem(int position) {
-		Item item = (Item) getListAdapter().getItem(position);
+	private void selectCity(int position) {
+		City city = (City) getListAdapter().getItem(position);
 		
-		views.setTextViewText(R.id.textViewWidgetItemName, item.getName());
-		views.setTextViewText(R.id.textViewWidgetItemTemperature, item.getTemperature());
-		views.setImageViewBitmap(R.id.imageButtonWidgetWeather, item.getBitmap());
+		views.setTextViewText(R.id.textViewWidgetCityName, city.getName());
+		views.setTextViewText(R.id.textViewWidgetCityTemperature, city.getTemperature());
+		views.setImageViewBitmap(R.id.imageButtonWidgetWeather, city.getBitmap());
 		
-		preferencesManager.saveItemToFile(item, mAppWidgetId);
+		preferencesManager.saveCityToFile(city, mAppWidgetId);
 		
 		appWidgetManager.updateAppWidget(mAppWidgetId, views);
 		acceptAndFinish();

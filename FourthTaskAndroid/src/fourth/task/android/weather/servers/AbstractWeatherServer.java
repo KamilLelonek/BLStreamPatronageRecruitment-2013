@@ -3,6 +3,7 @@ package fourth.task.android.weather.servers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -17,34 +18,38 @@ import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.util.Log;
 import fourth.task.android.FourthTaskAndroid;
-import fourth.task.android.items.Item;
+import fourth.task.android.cities.City;
 import fourth.task.android.weather.parsers.IWeatherParser;
 
 public abstract class AbstractWeatherServer implements IWeatherServer {
 	private Geocoder geocoder;
 	private IWeatherParser weatherParser;
-	private ArrayList<AsyncTask<Item, Void, Void>> asyncTasksQueue;
+	private ArrayList<AsyncTask<City, Void, Void>> asyncTasksQueue;
 	
 	protected String connectionString;
 	
 	public AbstractWeatherServer(Context context, IWeatherParser weatherParser) {
 		this.weatherParser = weatherParser;
-		asyncTasksQueue = new ArrayList<AsyncTask<Item, Void, Void>>();
+		asyncTasksQueue = new ArrayList<AsyncTask<City, Void, Void>>();
 		geocoder = new Geocoder(context);
 		
 	}
 	
-	@Override public void downloadData(List<Item> items) {
-		for (Item item : items) {
-			item.setConnectionString(String.format(connectionString, item.getLatitude(), item.getLongitude()));
-			asyncTasksQueue.add(new WeatherDataFetcher().execute(item));
+	@Override public void downloadData(City city) {
+		downloadData(Arrays.asList(new City[] { city }));
+	}
+	
+	@Override public void downloadData(List<City> cities) {
+		for (City city : cities) {
+			city.setConnectionString(String.format(connectionString, city.getLatitude(), city.getLongitude()));
+			asyncTasksQueue.add(new WeatherDataFetcher().execute(city));
 		}
 		
 		/* This section is specially prepared for join all started AsyncTasks.
 		 * There is a reasonable need to wait until all tasks are completed
-		 * because only then items' list should be updated and PowerLock should
+		 * because only then citys' list should be updated and PowerLock should
 		 * be released. */
-		for (AsyncTask<Item, Void, Void> asyncTask : asyncTasksQueue) {
+		for (AsyncTask<City, Void, Void> asyncTask : asyncTasksQueue) {
 			try {
 				asyncTask.get(); // thread join
 			}
@@ -57,20 +62,20 @@ public abstract class AbstractWeatherServer implements IWeatherServer {
 		}
 	}
 	
-	private class WeatherDataFetcher extends AsyncTask<Item, Void, Void> {
-		private Item item;
+	private class WeatherDataFetcher extends AsyncTask<City, Void, Void> {
+		private City city;
 		
-		@Override protected Void doInBackground(Item... params) {
-			item = params[0];
-			String itemConnectionString = item.getConnectionString();
+		@Override protected Void doInBackground(City... params) {
+			city = params[0];
+			String cityConnectionString = city.getConnectionString();
 			
 			try {
 				HttpClient httpClient = new DefaultHttpClient();
-				HttpGet request = new HttpGet(itemConnectionString);
+				HttpGet request = new HttpGet(cityConnectionString);
 				HttpResponse response = httpClient.execute(request);
 				@SuppressWarnings("resource")
 				InputStream data = response.getEntity().getContent();
-				weatherParser.parseData(data, item);
+				weatherParser.parseData(data, city);
 			}
 			catch (IOException e) {
 				Log.e(FourthTaskAndroid.STRING_LOG_TAG, "HttpClient exception. Device's became offline.");

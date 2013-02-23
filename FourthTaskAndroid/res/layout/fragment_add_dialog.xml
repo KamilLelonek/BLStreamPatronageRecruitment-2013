@@ -6,34 +6,34 @@
     android:orientation="vertical" >
 
     <EditText
-        android:id="@+id/EditTextItemName"
+        android:id="@+id/EditTextCityName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:hint="@string/label_itemName"
+        android:hint="@string/label_cityName"
         android:imeOptions="actionNext"
         android:inputType="textCapWords" />
 
     <EditText
-        android:id="@+id/EditTextItemLatitude"
+        android:id="@+id/EditTextCityLatitude"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:hint="@string/label_itemLatitude"
+        android:hint="@string/label_cityLatitude"
         android:imeOptions="actionNext"
         android:inputType="numberDecimal" />
 
     <EditText
-        android:id="@+id/EditTextItemLongitude"
+        android:id="@+id/EditTextCityLongitude"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:hint="@string/label_itemLongitude"
+        android:hint="@string/label_cityLongitude"
         android:imeOptions="actionDone"
         android:inputType="numberDecimal" />
 
     <Spinner
-        android:id="@+id/SpinnerItemColor"
+        android:id="@+id/SpinnerCityColor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:entries="@array/colors" />

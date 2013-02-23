@@ -20,20 +20,20 @@
         android:src="@drawable/no_weather" />
 
     <TextView
-        android:id="@+id/textViewWidgetItemName"
+        android:id="@+id/textViewWidgetCityName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textViewWidgetItemTemperature"
+        android:layout_alignLeft="@+id/textViewWidgetCityTemperature"
         android:clickable="true"
         android:duplicateParentState="true"
         android:text="City"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
-        android:id="@+id/textViewWidgetItemTemperature"
+        android:id="@+id/textViewWidgetCityTemperature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textViewWidgetItemName"
+        android:layout_below="@+id/textViewWidgetCityName"
         android:layout_toRightOf="@+id/imageButtonWidgetWeather"
         android:clickable="true"
         android:duplicateParentState="true"

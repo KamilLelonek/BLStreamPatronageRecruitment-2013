@@ -8,12 +8,12 @@ import org.json.JSONObject;
 import android.graphics.Bitmap;
 import android.util.Log;
 import fourth.task.android.FourthTaskAndroid;
-import fourth.task.android.items.Item;
+import fourth.task.android.cities.City;
 import fourth.task.android.utils.BitmapManager;
 
 public class OpenWeatherMapParser extends AbstractJSONParser {
 	
-	@Override public void updateWeatherData(Item item, String data) {
+	@Override public void updateWeatherData(City city, String data) {
 		try {
 			JSONObject jsonObjectWrapper = new JSONObject(data);
 			JSONObject jsonObjectData = jsonObjectWrapper.getJSONArray("list").getJSONObject(0);
@@ -21,13 +21,13 @@ public class OpenWeatherMapParser extends AbstractJSONParser {
 			/* Temperature */
 			JSONObject jsonObjectTemperature = jsonObjectData.getJSONObject("main");
 			double celciusDegrees = jsonObjectTemperature.getInt("temp") - 273;
-			item.setTemperature(String.valueOf(celciusDegrees));
+			city.setTemperature(String.valueOf(celciusDegrees));
 			
 			/* Icon */
 			String weatherIconID = jsonObjectData.getJSONArray("weather").getJSONObject(0).getString("icon");
 			Bitmap weatherIcon = BitmapManager.downloadBitmap("http://openweathermap.org/img/w/" + weatherIconID
 				+ ".png");
-			item.setBitmap(weatherIcon);
+			city.setBitmap(weatherIcon);
 			
 		}
 		catch (JSONException e) {

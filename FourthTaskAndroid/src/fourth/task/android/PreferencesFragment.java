@@ -9,6 +9,9 @@ import android.preference.PreferenceFragment;
 import android.text.method.DigitsKeyListener;
 import android.widget.EditText;
 
+/**
+ * Fragment used to present user useful preferences stored in SharedPreferences
+ */
 public class PreferencesFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
 	public static final String defaultCycleTimeInMinutes = "10";
 	public static final String PREFERENCE_CYCLE_TIME = "preferences_autorefresh_edittext";
@@ -47,6 +50,10 @@ public class PreferencesFragment extends PreferenceFragment implements OnSharedP
 		updateCurrentWeatherServer();
 	}
 	
+	/**
+	 * When user changes some preference, summaries should be updated
+	 * immediately to present the newest preferences data.
+	 */
 	@Override public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		if (key.equals(PREFERENCE_CYCLE_TIME)) {
 			updateCycleTimeValue();
@@ -56,11 +63,17 @@ public class PreferencesFragment extends PreferenceFragment implements OnSharedP
 		}
 	}
 	
+	/**
+	 * Updates summary of CycleTimeValue TextView
+	 */
 	private void updateCycleTimeValue() {
 		editTextAutoRefreshTimeCycle.setSummary(String.format(SUMMARY_CYCLE_TIME,
 			sharedPreferences.getString(PREFERENCE_CYCLE_TIME, defaultCycleTimeInMinutes)));
 	}
 	
+	/**
+	 * Updates summary of WeatherServer TextView
+	 */
 	private void updateCurrentWeatherServer() {
 		listWeatherServer.setSummary(String.format(
 			SUMMARY_SERVERS,

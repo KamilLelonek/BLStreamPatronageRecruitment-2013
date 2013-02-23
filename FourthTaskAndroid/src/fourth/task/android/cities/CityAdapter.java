@@ -1,4 +1,4 @@
-package fourth.task.android.items;
+package fourth.task.android.cities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,48 +18,48 @@ import android.widget.TextView;
 import fourth.task.android.R;
 
 /**
- * Simple class used for placing Item object to list view. It also enables
+ * Simple class used for placing City object to list view. It also enables
  * filtering by containing words/characters in item's name.
  */
-public class ItemAdapter extends BaseAdapter implements Filterable {
-	private List<Item> items;
+public class CityAdapter extends BaseAdapter implements Filterable {
+	private List<City> cities;
 	private ItemFilter mFilter;
 	private LayoutInflater inflater;
 	
-	public ItemAdapter(Activity activity, List<Item> items) {
-		this.items = items;
+	public CityAdapter(Activity activity, List<City> cities) {
+		this.cities = cities;
 		inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 	
-	public void add(Item item) {
+	public void add(City city) {
 		if (mFilter != null) {
-			List<Item> originalValues = mFilter.getOriginalValues();
-			originalValues.add(item);
+			List<City> originalValues = mFilter.getOriginalValues();
+			originalValues.add(city);
 		}
 		else {
-			items.add(item);
+			cities.add(city);
 		}
 		notifyDataSetChanged();
 	}
 	
-	public void remove(Item item) {
-		items.remove(item);
+	public void remove(City city) {
+		cities.remove(city);
 		if (mFilter != null) {
-			mFilter.getOriginalValues().remove(item);
+			mFilter.getOriginalValues().remove(city);
 		}
 		notifyDataSetChanged();
 	}
 	
 	@Override public int getCount() {
-		return items.size();
+		return cities.size();
 	}
 	
-	@Override public Item getItem(int position) {
-		return items.get(position);
+	@Override public City getItem(int position) {
+		return cities.get(position);
 	}
 	
-	public int getPosition(Item item) {
-		return items.indexOf(item);
+	public int getPosition(City city) {
+		return cities.indexOf(city);
 	}
 	
 	@Override public long getItemId(int position) {
@@ -67,27 +67,27 @@ public class ItemAdapter extends BaseAdapter implements Filterable {
 	}
 	
 	/**
-	 * @return current items collection
+	 * @return current cities collection
 	 */
-	public List<Item> getItems() {
-		return items;
+	public List<City> getCities() {
+		return cities;
 	}
 	
 	/**
-	 * @return current items collection as ArrayList
+	 * @return current cities collection as ArrayList
 	 */
-	public ArrayList<Item> getAllItems() {
-		return new ArrayList<Item>(getItems());
+	public ArrayList<City> getAllCities() {
+		return new ArrayList<City>(getCities());
 	}
 	
 	/**
-	 * Replaces current items collection with new one
+	 * Replaces current cities collection with new one
 	 * 
-	 * @param items new Items list
+	 * @param cities new Items list
 	 */
-	public void setItems(List<Item> items) {
-		this.items.clear();
-		this.items.addAll(items);
+	public void setItems(List<City> cities) {
+		this.cities.clear();
+		this.cities.addAll(cities);
 		notifyDataSetChanged();
 	}
 	
@@ -110,7 +110,7 @@ public class ItemAdapter extends BaseAdapter implements Filterable {
 		
 		// Keeping views in item tag allows to avoid invoking findViewById
 		// every time. It makes rendering faster.
-		Item currentItem = getItem(position);
+		City currentItem = getItem(position);
 		viewHolder.textViewName.setText(currentItem.getName());
 		viewHolder.textViewTemperature.setText(currentItem.getTemperature());
 		
@@ -125,7 +125,11 @@ public class ItemAdapter extends BaseAdapter implements Filterable {
 		ImageView imageViewWeather;
 	}
 	
-	private class GetViewTask extends AsyncTask<Item, Void, Bitmap> {
+	/**
+	 * Background task for decoding bitmap from byte array. It usually takes
+	 * some significant time and should be done in background.
+	 */
+	private class GetViewTask extends AsyncTask<City, Void, Bitmap> {
 		private ViewHolder viewHolder;
 		private int position;
 		
@@ -134,7 +138,7 @@ public class ItemAdapter extends BaseAdapter implements Filterable {
 			this.position = position;
 		}
 		
-		@Override protected Bitmap doInBackground(Item... params) {
+		@Override protected Bitmap doInBackground(City... params) {
 			return params[0].getBitmap();
 		}
 		
@@ -154,9 +158,9 @@ public class ItemAdapter extends BaseAdapter implements Filterable {
 	public void revertData() {
 		// filter has been used already, data in listView may be changed
 		if (mFilter != null) {
-			List<Item> originalValues = ((ItemFilter) getFilter()).getOriginalValues();
+			List<City> originalValues = ((ItemFilter) getFilter()).getOriginalValues();
 			if (originalValues != null) {
-				items = originalValues;
+				cities = originalValues;
 				notifyDataSetChanged();
 			}
 		}
@@ -170,41 +174,41 @@ public class ItemAdapter extends BaseAdapter implements Filterable {
 	}
 	
 	/**
-	 * Inner class used to filtering list of items
+	 * Inner class used to filtering list of cities
 	 */
 	private class ItemFilter extends Filter {
-		// A copy of the original items array, initialized from and then used
-		// instead as soon as the mFilter ArrayFilter is used. items will then
+		// A copy of the original cities array, initialized from and then used
+		// instead as soon as the mFilter ArrayFilter is used. cities will then
 		// only contain the filtered values.
-		private List<Item> mOriginalValues;
+		private List<City> mOriginalValues;
 		
-		public List<Item> getOriginalValues() {
+		public List<City> getOriginalValues() {
 			return mOriginalValues;
 		}
 		
 		@Override protected FilterResults performFiltering(CharSequence prefix) {
 			FilterResults results = new FilterResults();
 			if (mOriginalValues == null) {
-				mOriginalValues = new ArrayList<Item>(items);
+				mOriginalValues = new ArrayList<City>(cities);
 			}
 			
 			if (prefix == null || prefix.length() == 0) {
-				ArrayList<Item> list;
-				list = new ArrayList<Item>(mOriginalValues);
+				ArrayList<City> list;
+				list = new ArrayList<City>(mOriginalValues);
 				results.values = list;
 				results.count = list.size();
 			}
 			else {
 				String prefixString = prefix.toString().toLowerCase();
 				
-				ArrayList<Item> values;
-				values = new ArrayList<Item>(mOriginalValues);
+				ArrayList<City> values;
+				values = new ArrayList<City>(mOriginalValues);
 				
 				final int count = values.size();
-				final ArrayList<Item> newValues = new ArrayList<Item>();
+				final ArrayList<City> newValues = new ArrayList<City>();
 				
 				for (int i = 0; i < count; i++) {
-					final Item value = values.get(i);
+					final City value = values.get(i);
 					final String valueText = value.toString().toLowerCase();
 					
 					// First match against the whole, non-splitted value
@@ -233,7 +237,7 @@ public class ItemAdapter extends BaseAdapter implements Filterable {
 		
 		@SuppressWarnings("unchecked") @Override protected void publishResults(CharSequence constraint,
 			FilterResults results) {
-			items = (List<Item>) results.values;
+			cities = (List<City>) results.values;
 			if (results.count > 0) {
 				notifyDataSetChanged();
 			}
