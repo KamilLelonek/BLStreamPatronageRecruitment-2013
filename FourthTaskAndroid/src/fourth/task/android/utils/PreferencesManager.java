@@ -11,11 +11,10 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
-import fourth.task.android.R;
+import fourth.task.android.FourthTaskAndroid;
 import fourth.task.android.items.Item;
+import fourth.task.android.items.ItemModel;
 
 /**
  * This class allows to manage application shared preferences and also managing
@@ -24,9 +23,8 @@ import fourth.task.android.items.Item;
 public class PreferencesManager {
 	private final String STRING_CITIES = "cities";
 	private final String STRING_FIRST_RUN = "isFirstRun";
-	private final String STRING_FILE_DIRECTORY = "/BLStream";
-	private final String STRING_FILE_NAME = "savedList.ext";
-	private final String STRING_PATH = "path";
+	private final String STRING_FILE_NAME_LIST = "savedList.bls";
+	private final String STRING_FILE_NAME_ITEM = "savedItem%d.bls";
 	private final String STRING_LOG_TAG = "PreferencesManager";
 	
 	private SharedPreferences sharedPreferences;
@@ -61,28 +59,30 @@ public class PreferencesManager {
 	 * 
 	 * @return file to keep application data
 	 */
-	private File getSaveFileDirectory() {
-		File savedLocationsDirectory = new File(Environment.getExternalStorageDirectory().getPath()
-			.concat(STRING_FILE_DIRECTORY));
+	private File getApplicationFolder() {
+		File savedLocationsDirectory = new File(context.getFilesDir().getPath());
 		savedLocationsDirectory.mkdirs();
-		return new File(savedLocationsDirectory, STRING_FILE_NAME);
+		return savedLocationsDirectory;
 	}
 	
-	/**
-	 * Keeps path of file where data will be stored. When path doesn't exits it
-	 * means that neither the file. Then file must be created and it's path is
-	 * stored in preferences.
-	 * 
-	 * @return file path to store application data
-	 */
-	private String getFilePath() {
-		String path = sharedPreferences.getString(STRING_PATH, "");
-		if (path.length() == 0) {
-			path = getSaveFileDirectory().getAbsolutePath(); // should be /storage/sdcard0/BLStream/savedList.ext
-			sharedPreferencesEditor.putString(STRING_PATH, path);
-			sharedPreferencesEditor.commit();
-		}
-		return path;
+	private File getFileForList() {
+		return new File(getApplicationFolder(), STRING_FILE_NAME_LIST);
+	}
+	
+	private File getFileForItem(int fileID) {
+		return new File(getApplicationFolder(), String.format(STRING_FILE_NAME_ITEM, fileID));
+	}
+	
+	private String getFilePath(File file) {
+		return file.getAbsolutePath();
+	}
+	
+	private String getListFilePath() {
+		return getFilePath(getFileForList());
+	}
+	
+	private String getItemFilePath(int fileID) {
+		return getFilePath(getFileForItem(fileID));
 	}
 	
 	/**
@@ -90,17 +90,56 @@ public class PreferencesManager {
 	 * 
 	 * @param list list of items to serialize
 	 */
-	public void serializeQuotes(List<Item> list) {
-		Log.d(STRING_LOG_TAG, "Saving items to file.");
-		
+	public void saveListToFile(List<Item> list) {
+		serializator(list, getListFilePath());
+	}
+	
+	/**
+	 * Serializes simple items
+	 * 
+	 * @param item item to serialize
+	 */
+	public void saveItemToFile(Item item, int fileID) {
+		serializator(item, getItemFilePath(fileID));
+	}
+	
+	public boolean deleteItemFile(int fileID) {
+		return getFileForItem(fileID).delete();
+	}
+	
+	/**
+	 * General serializator object to file with specified path
+	 * 
+	 * @param object to serialize
+	 * @param filePath where object will be serialized
+	 */
+	private void serializator(Object object, String filePath) {
+		Log.d(STRING_LOG_TAG, "Serialization to: " + filePath);
 		try {
-			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(getFilePath()));
-			oos.writeObject(list);
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePath));
+			oos.writeObject(object);
 			oos.close();
 		}
 		catch (IOException e) {
-			Toast.makeText(context, R.string.alert_saving_error, Toast.LENGTH_SHORT).show();
+			Log.w(STRING_LOG_TAG, "Can\'t write to internal storage.");
 		}
+	}
+	
+	/**
+	 * Reads list from file. If it is first application run then list are
+	 * obtained from data model, in the other case list is deserialized.
+	 * 
+	 * @return list of items
+	 */
+	public List<Item> readListFromFile() {
+		if (!isFirstRun()) {
+			Log.d(FourthTaskAndroid.STRING_LOG_TAG, "Resuming application state.");
+			return deserializeList();
+		}
+		
+		Log.d(FourthTaskAndroid.STRING_LOG_TAG, "First application run!");
+		setFirstRunFalse();
+		return ItemModel.getItems();
 	}
 	
 	/**
@@ -108,18 +147,39 @@ public class PreferencesManager {
 	 * 
 	 * @return deserialized list of items
 	 */
-	@SuppressWarnings("unchecked") public List<Item> deserializeQuotes() {
-		Log.d(STRING_LOG_TAG, "Reading items from file.");
+	@SuppressWarnings("unchecked") private List<Item> deserializeList() {
+		Log.d(STRING_LOG_TAG, "Reading items' list from file.");
+		List<Item> list = (List<Item>) deserializator(getListFilePath());
+		return list == null ? new ArrayList<Item>() : list;
+	}
+	
+	/**
+	 * Deserializes item
+	 * 
+	 * @return deserialized item
+	 */
+	public Item readItemFromFile(int fileID) {
+		Log.d(STRING_LOG_TAG, "Reading item from file.");
+		return (Item) deserializator(getItemFilePath(fileID));
+	}
+	
+	/**
+	 * General deserializator object from file with specified path
+	 * 
+	 * @param filePath where object has been serialized
+	 */
+	private Object deserializator(String filePath) {
+		Log.d(STRING_LOG_TAG, "Deserialization from: " + filePath);
 		
-		List<Item> list = null;
+		Object object = null;
 		try {
-			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(getFilePath()));
-			list = (List<Item>) ois.readObject();
+			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filePath));
+			object = ois.readObject();
 			ois.close();
 		}
 		catch (Exception e) {
-			Toast.makeText(context, R.string.alert_reading_error, Toast.LENGTH_SHORT).show();
+			Log.w(STRING_LOG_TAG, "Can\'t read from internal storage.");
 		}
-		return list == null ? new ArrayList<Item>() : list;
+		return object;
 	}
 }

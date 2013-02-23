@@ -13,7 +13,7 @@ import fourth.task.android.R;
 /**
  * Alert dialog displayed when Internet connection is down.
  */
-public class FragmentDialogInternetConnection extends DialogFragment {
+public class DialogFragmentInternetConnection extends DialogFragment {
 	
 	@Override public Dialog onCreateDialog(Bundle savedInstanceState) {
 		return new AlertDialog.Builder(getActivity()).setPositiveButton(R.string.menu_settings, new OnClickListener() {

@@ -73,7 +73,7 @@ public abstract class AbstractWeatherServer implements IWeatherServer {
 				weatherParser.parseData(data, item);
 			}
 			catch (IOException e) {
-				Log.e(FourthTaskAndroid.STRING_LOG_TAG, "HttpClient exception.");
+				Log.e(FourthTaskAndroid.STRING_LOG_TAG, "HttpClient exception. Device's became offline.");
 			}
 			
 			return null;

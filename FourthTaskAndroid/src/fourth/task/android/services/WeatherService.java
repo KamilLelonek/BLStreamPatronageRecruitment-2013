@@ -6,24 +6,24 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.os.Binder;
-import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import fourth.task.android.PreferencesFragment;
 import fourth.task.android.R;
 import fourth.task.android.items.Item;
+import fourth.task.android.utils.ApplicationObject;
 import fourth.task.android.weather.servers.IWeatherServer;
 import fourth.task.android.weather.servers.OpenWeatherMapServer;
 import fourth.task.android.weather.servers.WorldWeatherOnlineServer;
 
 public class WeatherService extends IntentService implements OnSharedPreferenceChangeListener {
 	private IWeatherServer weatherServer;
-	private List<Item> items;
 	private LocalBroadcastManager localBroadcastManager;
+	private ApplicationObject applicationObject;
 	
-	public static final String INTENT_FILTER = "update-list";
+	public static final String INTENT_DOWNLOAD_COMPLETED = "fourth.task.android.services.DOWNLOAD_COMPLETED";
+	public static final String INTENT_DOWNLOAD_STARTED = "fourth.task.android.services.DOWNLOAD_STARTED";
 	
 	public WeatherService() {
 		super("WeatherService"); // name for the worker thread
@@ -34,6 +34,8 @@ public class WeatherService extends IntentService implements OnSharedPreferenceC
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 		weatherServer = getWeatherServer(sharedPreferences);
+		
+		applicationObject = (ApplicationObject) getApplication();
 		localBroadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
 	}
 	
@@ -45,15 +47,20 @@ public class WeatherService extends IntentService implements OnSharedPreferenceC
 	private void updateWeatherData() {
 		Log.d(ServiceManager.SERVICE_LOG_TAG, "WeatherService: Starting to update data.");
 		try {
+			List<Item> items = applicationObject.getItemAdapter().getItems();
 			// PowerLockManager prevents from multi-download data.
 			if (items != null && !items.isEmpty() && PowerLockManager.acquireLock(getApplicationContext())) {
+				localBroadcastManager.sendBroadcast(new Intent(INTENT_DOWNLOAD_STARTED));
 				weatherServer.downloadData(items);
 			}
 		}
+		catch (Exception e) {
+			Log.d(ServiceManager.SERVICE_LOG_TAG, "WeatherService: Updating data interrupted!");
+		}
 		finally {
 			PowerLockManager.relaseLock();
-			Log.d(ServiceManager.SERVICE_LOG_TAG, "WeatherService: Data succesfuly updated!");
-			localBroadcastManager.sendBroadcast(new Intent(INTENT_FILTER));
+			Log.d(ServiceManager.SERVICE_LOG_TAG, "WeatherService: Download finished!");
+			localBroadcastManager.sendBroadcast(new Intent(INTENT_DOWNLOAD_COMPLETED));
 		}
 	}
 	
@@ -71,26 +78,5 @@ public class WeatherService extends IntentService implements OnSharedPreferenceC
 		
 		if (serverName.equals(availableServers[1])) return new WorldWeatherOnlineServer(getApplicationContext());
 		return new OpenWeatherMapServer(getApplicationContext());
-	}
-	
-	/***************************************************
-	 ***************** Binding section *****************
-	 ***************************************************/
-	private final IBinder mBinder = new WeatherBinder();
-	
-	public class WeatherBinder extends Binder {
-		public WeatherService getService() {
-			// Return this instance of WeatherService so clients can call public methods
-			return WeatherService.this;
-		}
-	}
-	
-	@Override public IBinder onBind(Intent arg0) {
-		return mBinder;
-	}
-	
-	/* methods for clients */
-	public void setData(List<Item> items) {
-		this.items = items;
 	}
 }

@@ -63,7 +63,8 @@ public class MapViewFragment extends Fragment {
 	
 	@Override public void onResume() {
 		super.onResume();
-		localBroadcastManager.registerReceiver(broadcastReceiver, new IntentFilter(WeatherService.INTENT_FILTER));
+		localBroadcastManager.registerReceiver(broadcastReceiver, new IntentFilter(
+			WeatherService.INTENT_DOWNLOAD_COMPLETED));
 	}
 	
 	@Override public void onPause() {
@@ -106,10 +107,10 @@ public class MapViewFragment extends Fragment {
 				uiSettings.setCompassEnabled(true);
 				uiSettings.setMyLocationButtonEnabled(true);
 			}
-			
-			/* Filling map with points */
-			addItemsToMap();
 		}
+		/* Filling map with points */
+		mMap.clear();
+		addItemsToMap();
 	}
 	
 	/**

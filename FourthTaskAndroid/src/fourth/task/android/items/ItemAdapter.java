@@ -5,6 +5,8 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,22 +92,20 @@ public class ItemAdapter extends BaseAdapter implements Filterable {
 	}
 	
 	@Override public View getView(int position, View convertView, ViewGroup parent) {
-		View listItem = convertView;
 		if (convertView == null) {
-			listItem = inflater.inflate(R.layout.item_text_view, null);
+			convertView = inflater.inflate(R.layout.item_text_view, null);
 		}
-		ViewHolder viewHolder = (ViewHolder) listItem.getTag();
 		
-		/* A little bit of optimization by using modified ViewHolder pattern */
+		ViewHolder viewHolder = (ViewHolder) convertView.getTag();
 		if (viewHolder == null) {
 			viewHolder = new ViewHolder();
 			
-			viewHolder.textViewName = (TextView) listItem.findViewById(R.id.textViewName);
-			viewHolder.textViewTemperature = (TextView) listItem.findViewById(R.id.textViewTemperature);
-			viewHolder.imageViewWeather = (ImageView) listItem.findViewById(R.id.imageViewWeather);
-			
-			listItem.setTag(viewHolder);
+			viewHolder.textViewName = (TextView) convertView.findViewById(R.id.textViewName);
+			viewHolder.textViewTemperature = (TextView) convertView.findViewById(R.id.textViewTemperature);
+			viewHolder.imageViewWeather = (ImageView) convertView.findViewById(R.id.imageViewWeather);
 			viewHolder.imageViewWeather.setTag(position);
+			
+			convertView.setTag(viewHolder);
 		}
 		
 		// Keeping views in item tag allows to avoid invoking findViewById
@@ -114,21 +114,36 @@ public class ItemAdapter extends BaseAdapter implements Filterable {
 		viewHolder.textViewName.setText(currentItem.getName());
 		viewHolder.textViewTemperature.setText(currentItem.getTemperature());
 		
-		if (currentItem.getBitmap() != null) {
-			viewHolder.imageViewWeather.setImageBitmap(currentItem.getBitmap());
-		}
+		new GetViewTask(viewHolder, position).execute(currentItem); // rendering view moved to background
 		
-		// It works but doesn't look nice
-		// TODO Maybe implement (uncomment) it later
-		// listItem.setBackgroundColor(Color.parseColor(currentItem.getColor()));
-		
-		return listItem;
+		return convertView;
 	}
 	
 	private class ViewHolder {
 		TextView textViewName;
 		TextView textViewTemperature;
 		ImageView imageViewWeather;
+	}
+	
+	private class GetViewTask extends AsyncTask<Item, Void, Bitmap> {
+		private ViewHolder viewHolder;
+		private int position;
+		
+		public GetViewTask(ViewHolder viewHolder, int position) {
+			this.viewHolder = viewHolder;
+			this.position = position;
+		}
+		
+		@Override protected Bitmap doInBackground(Item... params) {
+			return params[0].getBitmap();
+		}
+		
+		@Override protected void onPostExecute(Bitmap result) {
+			int forPosition = (Integer) viewHolder.imageViewWeather.getTag();
+			if (forPosition == this.position) { // to avoid switching views
+				viewHolder.imageViewWeather.setImageBitmap(result);
+			}
+		}
 	}
 	
 	/**

@@ -1,7 +1,5 @@
 package fourth.task.android;
 
-import java.util.List;
-
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
@@ -11,23 +9,18 @@ import android.app.FragmentManager.OnBackStackChangedListener;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import fourth.task.android.items.Item;
 import fourth.task.android.services.ServiceManager;
 import fourth.task.android.services.WeatherService;
-import fourth.task.android.services.WeatherService.WeatherBinder;
 import fourth.task.android.utils.ApplicationObject;
-import fourth.task.android.utils.FragmentDialogInternetConnection;
+import fourth.task.android.utils.DialogFragmentInternetConnection;
 
 public class FourthTaskAndroid extends Activity implements ActionBar.TabListener {
 	public static final String STRING_LOG_TAG = "FourthTaskAndroid";
@@ -35,35 +28,13 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 	private FragmentManager fragmentManager;
 	private final Fragment listViewFragment = new ListViewFragment();
 	private final Fragment mapViewFragment = new MapViewFragment();
+	private final DialogFragmentInternetConnection internetConnectionFragmentDialog = new DialogFragmentInternetConnection();
 	
 	private ActionBar actionBar;
 	private ProgressDialog progressDialog;
 	private LocalBroadcastManager localBroadcastManager;
 	private BroadcastReceiver broadcastReceiver;
 	private ApplicationObject applicationObject;
-	private boolean isServiceBound;
-	
-	private WeatherService weatherService;
-	private final ServiceConnection serviceConnection = new ServiceConnection() {
-		/* After establishing a connection with service all items are passed
-		 * there in case to update their weather data. Here cannot be used
-		 * passing by intent or other way because we need to maintain strong
-		 * reference to this collection. */
-		@Override public void onServiceConnected(ComponentName name, IBinder service) {
-			weatherService = ((WeatherBinder) service).getService();
-			
-			setWeatherServiceData(applicationObject.getItemAdapter().getItems());
-			callForServiceManager();
-			
-			isServiceBound = true;
-			Log.d(STRING_LOG_TAG, "Service bound!");
-		}
-		
-		@Override public void onServiceDisconnected(ComponentName name) {
-			isServiceBound = false;
-			Log.d(STRING_LOG_TAG, "Service unbound!");
-		}
-	};
 	
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -75,13 +46,7 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 		fragmentManager.addOnBackStackChangedListener(new SmartBackStackListener());
 		
 		localBroadcastManager = LocalBroadcastManager.getInstance(FourthTaskAndroid.this);
-		broadcastReceiver = new BroadcastReceiver() {
-			@Override public void onReceive(Context context, Intent intent) {
-				if (progressDialog != null && progressDialog.isShowing()) {
-					progressDialog.dismiss();
-				}
-			}
-		};
+		broadcastReceiver = new WeatherChangesBroadcastReceiver();
 		
 		// Specify that we will be displaying tabs in the action bar
 		actionBar = getActionBar();
@@ -92,19 +57,14 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 	
 	@Override protected void onStart() {
 		super.onStart();
-		if (!isServiceBound) {
-			bindService(new Intent(this, WeatherService.class), serviceConnection, Context.BIND_AUTO_CREATE);
-		}
-		else {
-			callForServiceManager();
-		}
-		localBroadcastManager.registerReceiver(broadcastReceiver, new IntentFilter(WeatherService.INTENT_FILTER));
+		callForServiceManager();
+		registerReceiver();
 	}
 	
-	public void setWeatherServiceData(List<Item> list) {
-		if (weatherService != null) {
-			weatherService.setData(list);
-		}
+	private void registerReceiver() {
+		IntentFilter intentFilter = new IntentFilter(WeatherService.INTENT_DOWNLOAD_COMPLETED);
+		intentFilter.addAction(WeatherService.INTENT_DOWNLOAD_STARTED);
+		localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
 	}
 	
 	private void callForServiceManager() {
@@ -116,17 +76,14 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 	
 	private boolean isNetworkOnline() {
 		if (applicationObject.isConnectedToInternet()) return true;
-		
-		new FragmentDialogInternetConnection().show(getFragmentManager(), "");
+		if (internetConnectionFragmentDialog != null && !internetConnectionFragmentDialog.isAdded()) {
+			internetConnectionFragmentDialog.show(getFragmentManager(), "");
+		}
 		return false;
 	}
 	
 	@Override protected void onStop() {
 		super.onStop();
-		if (isServiceBound) {
-			unbindService(serviceConnection);
-			isServiceBound = false;
-		}
 		localBroadcastManager.unregisterReceiver(broadcastReceiver);
 	}
 	
@@ -139,6 +96,11 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 				ft.replace(R.id.fragment_container, mapViewFragment);
 				break;
 		}
+	}
+	
+	@Override protected void onDestroy() {
+		stopService(new Intent(FourthTaskAndroid.this, ServiceManager.class));
+		super.onDestroy();
 	}
 	
 	@Override public void onTabReselected(Tab tab, FragmentTransaction ft) {}
@@ -155,8 +117,10 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 			case R.id.menu_refresh:
 				if (isNetworkOnline()) {
 					startService(new Intent(FourthTaskAndroid.this, ServiceManager.class));
-					progressDialog = ProgressDialog.show(FourthTaskAndroid.this, "",
-						getString(R.string.alert_progress_dialog_message));
+					if (progressDialog == null) {
+						progressDialog = ProgressDialog.show(FourthTaskAndroid.this, "",
+							getString(R.string.alert_progress_dialog_message));
+					}
 				}
 				return true;
 			case R.id.menu_preferences:
@@ -166,6 +130,35 @@ public class FourthTaskAndroid extends Activity implements ActionBar.TabListener
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
+		}
+	}
+	
+	private class WeatherChangesBroadcastReceiver extends BroadcastReceiver {
+		@Override public void onReceive(Context context, Intent intent) {
+			if (intent.getAction().equals(WeatherService.INTENT_DOWNLOAD_STARTED)) {
+				if (internetConnectionFragmentDialog != null && internetConnectionFragmentDialog.isAdded()) {
+					internetConnectionFragmentDialog.dismiss();
+				}
+				if (progressDialog != null) {
+					if (!progressDialog.isShowing()) {
+						progressDialog.show();
+					}
+				}
+				else {
+					progressDialog = ProgressDialog.show(FourthTaskAndroid.this, "",
+						getString(R.string.alert_progress_dialog_message));
+				}
+			}
+			else if (intent.getAction().equals(WeatherService.INTENT_DOWNLOAD_COMPLETED)) {
+				if (progressDialog != null && progressDialog.isShowing()) {
+					progressDialog.dismiss();
+				}
+				
+				/* When BroadcastReceiver receives intent that mean it needs to update
+				 * item adapter data. It has to be done right here because service runs
+				 * in different (not UI) thread, and mustn't have influence on layout. */
+				applicationObject.getItemAdapter().notifyDataSetChanged();
+			}
 		}
 	}
 	

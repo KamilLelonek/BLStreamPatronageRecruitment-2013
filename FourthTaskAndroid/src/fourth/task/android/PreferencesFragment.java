@@ -33,12 +33,16 @@ public class PreferencesFragment extends PreferenceFragment implements OnSharedP
 		EditText myEditText = editTextAutoRefreshTimeCycle.getEditText();
 		myEditText.setKeyListener(DigitsKeyListener.getInstance(false, true));
 		
-		sharedPreferences = getPreferenceManager().getSharedPreferences();
+		sharedPreferences = getPreferenceScreen().getSharedPreferences();
+	}
+	
+	@Override public void onStart() {
+		super.onStart();
+		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 	}
 	
 	@Override public void onResume() {
 		super.onResume();
-		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 		updateCycleTimeValue();
 		updateCurrentWeatherServer();
 	}
@@ -64,8 +68,8 @@ public class PreferencesFragment extends PreferenceFragment implements OnSharedP
 				getResources().getStringArray(R.array.preferences_weather_servers_list)[0])));
 	}
 	
-	@Override public void onPause() {
+	@Override public void onStop() {
 		sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
-		super.onPause();
+		super.onStop();
 	}
 }

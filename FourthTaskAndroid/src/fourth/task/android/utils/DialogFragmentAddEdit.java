@@ -21,7 +21,7 @@ import fourth.task.android.items.Item;
 /**
  * FragmentDialog representing add/edit item view.
  */
-public class FragmentDialogAddEdit extends DialogFragment {
+public class DialogFragmentAddEdit extends DialogFragment {
 	private final String REGEX_FOR_SIGNED_DOUBLE_NUMBERS = "-?\\d+(.\\d+)?";
 	
 	private boolean isViewInitialized;

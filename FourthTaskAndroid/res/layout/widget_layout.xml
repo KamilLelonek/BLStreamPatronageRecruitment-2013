@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/WidgetRelativeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/appwidget_button_selector"
+    android:clickable="true"
+    android:padding="5dp"
+    tools:ignore="HardcodedText,ContentDescription" >
+
+    <ImageView
+        android:id="@+id/imageButtonWidgetWeather"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="5dp"
+        android:duplicateParentState="true"
+        android:src="@drawable/no_weather" />
+
+    <TextView
+        android:id="@+id/textViewWidgetItemName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textViewWidgetItemTemperature"
+        android:clickable="true"
+        android:duplicateParentState="true"
+        android:text="City"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/textViewWidgetItemTemperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewWidgetItemName"
+        android:layout_toRightOf="@+id/imageButtonWidgetWeather"
+        android:clickable="true"
+        android:duplicateParentState="true"
+        android:text="Temp"
+        android:textAppearance="?android:attr/textAppearance" />
+
+</RelativeLayout>

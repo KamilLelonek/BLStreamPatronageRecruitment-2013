@@ -4,9 +4,6 @@ import android.content.Context;
 import android.os.PowerManager;
 import android.util.Log;
 
-/**
- * PowerLockReceiver prevents from destroying services and receivers.
- */
 public class PowerLockManager {
 	private static PowerManager.WakeLock wakeLock;
 	

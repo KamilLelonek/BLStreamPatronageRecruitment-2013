@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.NetworkInfo.State;
 import android.util.Log;
 import android.widget.Toast;
 import fourth.task.android.R;
@@ -45,13 +46,22 @@ public class NetworkStateChangeReceiver extends BroadcastReceiver {
 	 * receives message that phone is connected to active network and service
 	 * should start to update items data. */
 	private void controlServiceManager(Context context) {
-		if (networkInfoMobile.getState().equals(NetworkInfo.State.DISCONNECTED)
-			&& networkInfoWifi.getState().equals(NetworkInfo.State.DISCONNECTED)) {
+		State networkInfoMobileState = networkInfoMobile.getState();
+		// networkInfoMobileState == DISCONNECTED	=> Not connected
+		// networkInfoMobileState == UNKNOWN		=> No SIM card
+		
+		// when device is off-line:
+		if ((networkInfoMobileState.equals(NetworkInfo.State.DISCONNECTED) || networkInfoMobileState
+			.equals(NetworkInfo.State.UNKNOWN)) && networkInfoWifi.getState().equals(NetworkInfo.State.DISCONNECTED)) {
 			Toast.makeText(context, R.string.alert_internet_connection_title, Toast.LENGTH_SHORT).show();
 			
 			context.stopService(new Intent(context, ServiceManager.class));
 			isServiceManagerRunning = false;
 		}
+		/* device is online but it has to be checked if:
+		 * WIFI and MOBILE had been both online but only one of them was turned off
+		 * so in that case there is no need to start ServiceManager one again
+		 */
 		else if (!isServiceManagerRunning) {
 			context.startService(new Intent(context, ServiceManager.class));
 			isServiceManagerRunning = true;

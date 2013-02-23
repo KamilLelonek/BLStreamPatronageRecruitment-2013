@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<string-array name="colors">
-		<item>« select color »</item>
-		<item value="#f00">RED</item>
-		<item value="#0f0">GREEN</item>
-		<item value="#00f">BLUE</item>
-		<item value="#ff0">YELLOW</item>
-		<item value="#0ff">CYAN</item>
-		<item value="#f0f">MAGENTA</item>
-		<item value="#888">GRAY</item>
-		<item value="#000">BLACK</item>
-		<item value="#fff">WHITE</item>
-	</string-array>
+    <string-array name="colors">
+        <item>« select color »</item>
+        <item value="#f00">RED</item>
+        <item value="#0f0">GREEN</item>
+        <item value="#00f">BLUE</item>
+        <item value="#ff0">YELLOW</item>
+        <item value="#0ff">CYAN</item>
+        <item value="#f0f">MAGENTA</item>
+        <item value="#888">GRAY</item>
+        <item value="#000">BLACK</item>
+        <item value="#fff">WHITE</item>
+    </string-array>
+
+    <color name="light_blue">#33B5E5</color>
+    <color name="dark_blue">#0099CC</color>
 
 </resources>
