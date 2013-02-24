@@ -47,7 +47,7 @@ public abstract class AbstractWeatherServer implements IWeatherServer {
 		
 		/* This section is specially prepared for join all started AsyncTasks.
 		 * There is a reasonable need to wait until all tasks are completed
-		 * because only then citys' list should be updated and PowerLock should
+		 * because only then cities' list should be updated and PowerLock should
 		 * be released. */
 		for (AsyncTask<City, Void, Void> asyncTask : asyncTasksQueue) {
 			try {

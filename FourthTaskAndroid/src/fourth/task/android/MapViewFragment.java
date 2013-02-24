@@ -49,7 +49,7 @@ public class MapViewFragment extends Fragment {
 			@Override public void onReceive(Context context, Intent intent) {
 				// Refresh map view
 				mMap.clear();
-				addCitysToMap();
+				addcitiesToMap();
 			}
 		};
 	}
@@ -110,14 +110,14 @@ public class MapViewFragment extends Fragment {
 		}
 		/* Filling map with points */
 		mMap.clear();
-		addCitysToMap();
+		addcitiesToMap();
 	}
 	
 	/**
-	 * Simple citys managing.
+	 * Simple cities managing.
 	 */
-	/* Puts markers on map from citys list */
-	private void addCitysToMap() {
+	/* Puts markers on map from cities list */
+	private void addcitiesToMap() {
 		ArrayList<City> cities = applicationObject.getCityAdapter().getAllCities();
 		ArrayList<MarkerOptions> markers = createMarkerList(cities);
 		for (MarkerOptions marker : markers) {

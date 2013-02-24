@@ -102,16 +102,16 @@ public class PreferencesManager {
 	}
 	
 	/**
-	 * Serializes list of citys
+	 * Serializes list of cities
 	 * 
-	 * @param list list of citys to serialize
+	 * @param list list of cities to serialize
 	 */
 	public void saveListToFile(List<City> list) {
 		serializator(list, getListFilePath());
 	}
 	
 	/**
-	 * Serializes simple citys
+	 * Serializes simple cities
 	 * 
 	 * @param city city to serialize
 	 */
@@ -145,7 +145,7 @@ public class PreferencesManager {
 	 * Reads list from file. If it is first application run then list are
 	 * obtained from data model, in the other case list is deserialized.
 	 * 
-	 * @return list of citys
+	 * @return list of cities
 	 */
 	public List<City> readListFromFile() {
 		if (!isFirstRun()) {
@@ -159,12 +159,12 @@ public class PreferencesManager {
 	}
 	
 	/**
-	 * Deserializes list of citys
+	 * Deserializes list of cities
 	 * 
-	 * @return deserialized list of citys
+	 * @return deserialized list of cities
 	 */
 	@SuppressWarnings("unchecked") private List<City> deserializeList() {
-		Log.d(STRING_LOG_TAG, "Reading citys' list from file.");
+		Log.d(STRING_LOG_TAG, "Reading cities' list from file.");
 		List<City> list = (List<City>) deserializator(getListFilePath());
 		return list == null ? new ArrayList<City>() : list;
 	}

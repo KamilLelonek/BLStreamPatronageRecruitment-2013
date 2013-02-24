@@ -51,23 +51,23 @@ public class ListViewFragment extends ListFragment implements DialogFragmentAddE
 		registerForContextMenu(getListView());
 	}
 	
-	/* Deserializing citys */
+	/* Deserializing cities */
 	@Override public void onStart() {
 		super.onStart();
 		if (cityAdapter == null) {
-			readCitys();
+			readcities();
 		}
 		ApplicationObject app = ((ApplicationObject) activity.getApplication());
 		app.setCityAdapter(cityAdapter);
 	}
 	
-	private void readCitys() {
+	private void readcities() {
 		List<City> cities = preferencesManager.readListFromFile();
 		cityAdapter = new CityAdapter(activity, cities);
 		setListAdapter(cityAdapter);
 	}
 	
-	/* Serializing citys */
+	/* Serializing cities */
 	@Override public void onStop() {
 		cityAdapter.revertData();
 		preferencesManager.saveListToFile(cityAdapter.getCities());

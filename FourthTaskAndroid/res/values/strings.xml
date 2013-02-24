@@ -10,7 +10,7 @@
     <string name="label_cityLatitude">Latitude</string>
     <string name="label_cityLongitude">Longitude</string>
     <string name="label_cityColor">Color</string>
-    <string name="label_showMap">Show selected citys on map</string>
+    <string name="label_showMap">Show selected cities on map</string>
     <string name="label_manageCity">Manage city</string>
     <string name="label_list">List</string>
     <string name="label_map">Map</string>
