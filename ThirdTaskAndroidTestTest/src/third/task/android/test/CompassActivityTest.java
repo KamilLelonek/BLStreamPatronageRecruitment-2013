@@ -1,30 +1,41 @@
 package third.task.android.test;
 
+import java.util.ArrayList;
+
 import third.task.android.CompassActivity;
 import third.task.android.compass.CompassRadar;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Point;
-import android.test.ActivityUnitTestCase;
+import android.os.Parcelable;
+import android.test.ActivityInstrumentationTestCase2;
 
-public class CompassActivityTest extends ActivityUnitTestCase<CompassActivity> {
-	private CompassActivity activity;
-	private CompassRadar compassRadar;
+public class CompassActivityTest extends ActivityInstrumentationTestCase2<CompassActivity> {
 	
 	public CompassActivityTest() {
 		super(CompassActivity.class);
 	}
 	
 	@Override protected void setUp() throws Exception {
-		startActivity(new Intent(getInstrumentation().getTargetContext(), CompassActivity.class), null, null);
-		activity = getActivity();
-		compassRadar = (CompassRadar) activity.findViewById(third.task.android.R.id.compassRadar);
+		super.setUp();
+		Intent showMapIntent = new Intent(getInstrumentation().getTargetContext(), CompassActivity.class);
+		showMapIntent.putParcelableArrayListExtra("checked_items", new ArrayList<Parcelable>());
+		setActivityIntent(showMapIntent);
+	}
+	
+	public void testPreConditions() {
+		Activity activity = getActivity();
+		assertNotNull(activity);
 	}
 	
 	public void testInitializingView() {
+		CompassRadar compassRadar = (CompassRadar) getActivity().findViewById(third.task.android.R.id.compassRadar);
 		assertNotNull(compassRadar);
 	}
 	
 	public void testRadarDirection() {
+		CompassRadar compassRadar = (CompassRadar) getActivity().findViewById(third.task.android.R.id.compassRadar);
+		
 		assertEquals(0, compassRadar.getDirection());
 		
 		Point point = new Point();
@@ -35,8 +46,7 @@ public class CompassActivityTest extends ActivityUnitTestCase<CompassActivity> {
 	}
 	
 	public void testShowAndHideRadar() {
-		assertTrue(compassRadar.isShown());
-		activity.manageShowingRadarClick(null);
+		CompassRadar compassRadar = (CompassRadar) getActivity().findViewById(third.task.android.R.id.compassRadar);
 		assertFalse(compassRadar.isShown());
 	}
 }

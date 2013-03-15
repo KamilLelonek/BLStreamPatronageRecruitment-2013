@@ -6,6 +6,7 @@ import third.task.android.compass.CompassInterface;
 import third.task.android.items.Item;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.hardware.Sensor;
@@ -130,9 +131,15 @@ public class CompassActivity extends Activity implements SensorEventListener {
 			}
 			
 			/* Filling map with points */
-			checkedItems = getIntent().getExtras().getParcelableArrayList(ThirdTaskAndroid.STRING_CHECKED_ITEMS);
-			if (checkedItems != null) {
-				addItemsToMap(checkedItems);
+			Intent intent = getIntent();
+			if (intent != null) {
+				Bundle extras = intent.getExtras();
+				if (extras != null) {
+					checkedItems = extras.getParcelableArrayList(ThirdTaskAndroid.STRING_CHECKED_ITEMS);
+					if (checkedItems != null) {
+						addItemsToMap(checkedItems);
+					}
+				}
 			}
 		}
 	}
