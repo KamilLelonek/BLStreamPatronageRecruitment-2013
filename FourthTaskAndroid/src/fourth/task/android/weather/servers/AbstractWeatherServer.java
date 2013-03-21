@@ -73,7 +73,6 @@ public abstract class AbstractWeatherServer implements IWeatherServer {
 				HttpClient httpClient = new DefaultHttpClient();
 				HttpGet request = new HttpGet(cityConnectionString);
 				HttpResponse response = httpClient.execute(request);
-				@SuppressWarnings("resource")
 				InputStream data = response.getEntity().getContent();
 				weatherParser.parseData(data, city);
 			}

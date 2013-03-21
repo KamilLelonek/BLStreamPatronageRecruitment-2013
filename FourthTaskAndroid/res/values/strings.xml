@@ -2,7 +2,7 @@
 <resources>
 
     <!-- General -->
-    <string name="app_name">FourthTaskAndroid</string>
+    <string name="app_name">WeatherMap</string>
 
     <!-- Labels -->
     <string name="label_filterHint">type in to filter</string>

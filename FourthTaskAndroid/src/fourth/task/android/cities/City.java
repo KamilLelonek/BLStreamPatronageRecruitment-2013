@@ -108,7 +108,7 @@ public class City implements Serializable {
 	/* Returns simple marker to draw on map. */
 	public MarkerOptions getMarker() {
 		return new MarkerOptions().position(new LatLng(latitude, longitude)).title(name).snippet(getTemperature())
-			.icon(BitmapDescriptorFactory.defaultMarker());
+			.icon(BitmapDescriptorFactory.fromBitmap(getBitmap()));
 	}
 	
 	/* toString and equals added to make renaming, deleting and adding operation easier */

@@ -7,7 +7,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.NetworkInfo.State;
 import android.util.Log;
-import android.widget.Toast;
 import fourth.task.android.R;
 
 /**
@@ -53,7 +52,7 @@ public class NetworkStateChangeReceiver extends BroadcastReceiver {
 		// when device is off-line:
 		if ((networkInfoMobileState.equals(NetworkInfo.State.DISCONNECTED) || networkInfoMobileState
 			.equals(NetworkInfo.State.UNKNOWN)) && networkInfoWifi.getState().equals(NetworkInfo.State.DISCONNECTED)) {
-			Toast.makeText(context, R.string.alert_internet_connection_title, Toast.LENGTH_SHORT).show();
+			Log.d(LOG_TAG, context.getResources().getString(R.string.alert_internet_connection_title));
 			
 			context.stopService(new Intent(context, ServiceManager.class));
 			isServiceManagerRunning = false;
