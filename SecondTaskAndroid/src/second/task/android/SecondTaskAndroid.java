@@ -138,7 +138,19 @@ public class SecondTaskAndroid extends FragmentActivity implements FragmentDialo
 	}
 	
 	private boolean intitializeOptionsMenu(Menu menu) {
-		SearchView filterTextView = (SearchView) menu.findItem(R.id.menu_filter).getActionView();
+		MenuItem searchMenuItem = menu.findItem(R.id.menu_filter);
+		searchMenuItem.setOnActionExpandListener(new OnActionExpandListener() {
+			@Override public boolean onMenuItemActionCollapse(MenuItem item) {
+				itemAdapter.revertData();
+				return true;
+			}
+			
+			@Override public boolean onMenuItemActionExpand(MenuItem item) {
+				return true;
+			}
+		});
+		
+		SearchView filterTextView = (SearchView) searchMenuItem.getActionView();
 		filterTextView.setQueryHint(getString(R.string.label_filterHint));
 		filterTextView.setOnQueryTextListener(new OnQueryTextListener() {
 			
@@ -150,18 +162,6 @@ public class SecondTaskAndroid extends FragmentActivity implements FragmentDialo
 			@Override public boolean onQueryTextChange(String newText) {
 				itemAdapter.getFilter().filter(newText);
 				return false;
-			}
-		});
-		
-		MenuItem menuItem = menu.findItem(R.id.menu_filter);
-		menuItem.setOnActionExpandListener(new OnActionExpandListener() {
-			@Override public boolean onMenuItemActionCollapse(MenuItem item) {
-				itemAdapter.revertData();
-				return true;
-			}
-			
-			@Override public boolean onMenuItemActionExpand(MenuItem item) {
-				return true;
 			}
 		});
 		
